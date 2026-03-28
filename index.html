@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Darts 🎯</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0f0f14; --surface:#1a1a24; --surface2:#22222f;
+  --border:rgba(255,255,255,0.08);
+  --green:#39d98a; --blue:#4f9cf9; --red:#ff5c6a; --amber:#ffb830; --gold:#f0c040;
+  --text:#f0f0f0; --muted:#666; --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;}
+header{text-align:center;padding:.5em 1em .3em;font-family:'Bebas Neue',sans-serif;font-size:1.8em;color:var(--green);letter-spacing:.1em;}
+.wrap{max-width:700px;margin:auto;padding:0 .6em 1em;}
+
+/* Fixed bottom */
+#gameScroll{padding-bottom:220px;}
+#throwBar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:.5em .6em env(safe-area-inset-bottom,.5em);z-index:100;}
+#throwBarInner{max-width:700px;margin:auto;}
+
+/* Cards */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.6em .8em;margin-bottom:.5em;}
+.card-label{font-size:.65em;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.5em;}
+
+/* Buttons */
+button{padding:.35em .75em;margin:.15em;border:1px solid var(--border);border-radius:7px;cursor:pointer;background:var(--surface2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:.88em;font-weight:500;transition:background .12s,border-color .12s;line-height:1.3;}
+button:hover{background:#2a2a3a;border-color:rgba(255,255,255,.2);}
+button.active{background:var(--green);border-color:var(--green);color:#000;font-weight:700;}
+button.co{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:700;font-size:.82em;}
+button.danger-btn{background:var(--red);border-color:var(--red);color:#fff;}
+button.ghost{background:transparent;border-color:transparent;color:var(--muted);font-size:.8em;padding:.2em .4em;}
+button.ghost:hover{color:var(--red);border-color:var(--red);background:transparent;}
+button.mod{font-weight:800;font-size:1em;min-width:2.4em;padding:.3em .5em;}
+button.mod.active{background:var(--amber);border-color:var(--amber);color:#000;}
+button.tab{border-radius:6px;font-size:.85em;}
+button.tab.active{background:var(--green);border-color:var(--green);color:#000;}
+
+/* Throw grid */
+.tgrid{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:.5em;}
+.tgrid button{width:3.2em;height:3.2em;padding:0;font-size:1em;font-weight:700;border-radius:7px;}
+.tgrid button.bull{border-color:var(--red);color:var(--red);}
+.mod-row{display:flex;gap:6px;align-items:center;}
+hr{border:none;border-top:1px solid var(--border);margin:.4em 0;}
+
+/* Players grid (game) */
+.players-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.4em;margin-bottom:.5em;}
+.player{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:.4em .55em;transition:border-color .15s,box-shadow .15s,opacity .15s;}
+.player.current{border-color:var(--green);box-shadow:0 0 0 1px var(--green),0 2px 14px rgba(57,217,138,.12);}
+.player.busted{border-color:var(--red);}
+.player.won{border-color:var(--gold);opacity:.6;}
+.p-name{font-size:.88em;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.15em;}
+.p-main{display:flex;align-items:center;gap:.4em;}
+.p-score{font-family:'Bebas Neue',sans-serif;font-size:1.9em;line-height:1;color:var(--green);flex-shrink:0;min-width:1.8em;}
+.p-score.warn{color:var(--amber);}
+.p-score.bust-col{color:var(--red);}
+.p-score.won-col{color:var(--gold);}
+.dartrow{display:flex;gap:3px;flex:1;}
+.d{flex:1;height:1.55em;display:flex;align-items:center;justify-content:center;border-radius:4px;font-size:.68em;font-weight:700;background:var(--surface);border:1px solid var(--border);min-width:0;}
+.d.empty{border-style:dashed;opacity:.2;}
+.d.miss{color:var(--muted);}
+.d.hit{color:#ddd;}
+.d.bust-d{color:var(--red);}
+.d.prev{color:#4a4a5a;font-style:italic;}
+.p-last{font-size:.7em;font-weight:700;margin-top:.15em;}
+
+/* Win banner */
+#winBanner{display:none;background:linear-gradient(135deg,#1a1a10,#2a2a14);border:1px solid var(--gold);border-radius:var(--r);padding:.8em 1em;margin-bottom:.5em;text-align:center;}
+#winBanner .win-title{font-family:'Bebas Neue',sans-serif;font-size:1.6em;color:var(--gold);letter-spacing:.1em;}
+#winBanner .win-sub{font-size:.8em;color:#aaa;margin-top:.2em;}
+
+/* Setup player list */
+.player-entry{display:flex;align-items:center;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.3em .4em .3em .7em;margin-bottom:.3em;cursor:pointer;transition:border-color .12s;}
+.player-entry:hover{border-color:rgba(255,255,255,.15);}
+.player-entry.selected{border-color:var(--green);background:rgba(57,217,138,.07);}
+.pe-name{font-size:.9em;font-weight:600;}
+.pe-stats{font-size:.7em;color:var(--muted);margin-top:.1em;}
+.pe-right{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+
+/* Stats */
+.stats-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:.8em 1em;margin-bottom:.5em;}
+.stats-name{font-size:1.1em;font-weight:700;margin-bottom:.5em;}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4em;}
+.stat-item{background:var(--surface);border-radius:7px;padding:.4em .6em;}
+.stat-label{font-size:.65em;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.5em;color:var(--text);line-height:1.1;}
+.stat-val.green{color:var(--green);}
+.stat-val.gold{color:var(--gold);}
+
+/* Input */
+input[type=text]{background:var(--surface2);border:1px solid var(--border);border-radius:7px;color:var(--text);padding:.38em .7em;font-family:'DM Sans',sans-serif;font-size:.9em;outline:none;margin-right:.2em;width:140px;}
+input[type=text]:focus{border-color:var(--green);}
+.co-row{display:flex;flex-wrap:wrap;gap:5px;}
+.nav-tabs{display:flex;gap:6px;margin-bottom:.7em;}
+
+@media(max-width:480px){
+  .tgrid button{width:2.9em;height:2.9em;font-size:.95em;}
+  .p-score{font-size:1.6em;}
+  .players-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+<header>🎯 Darts</header>
+<div class="wrap">
+
+<!-- ══ SETUP ══ -->
+<div id="setup">
+  <div class="nav-tabs">
+    <button class="tab active" id="tabSetup" onclick="showTab('setup-content')">Peli</button>
+    <button class="tab"        id="tabStats"  onclick="showTab('stats-content')">Tilastot</button>
+  </div>
+
+  <!-- PELI TAB -->
+  <div id="setup-content">
+    <div class="card">
+      <div class="card-label">Pisteluku</div>
+      <button id="btn301">301</button><button id="btn501">501</button>
+    </div>
+    <div class="card">
+      <div class="card-label">In / Out</div>
+      <button id="btnSingleIn">Single In</button><button id="btnDoubleIn">Double In</button>
+      &nbsp;<button id="btnSingleOut">Single Out</button><button id="btnDoubleOut">Double Out</button>
+    </div>
+    <div class="card">
+      <div class="card-label">Pelaajat — valitse peliin mukaan</div>
+      <div style="margin-bottom:.5em;">
+        <input type="text" id="newPlayer" placeholder="Uusi pelaaja">
+        <button id="addPlayer">Lisää</button>
+      </div>
+      <div id="playerList" style="max-height:38vh;overflow-y:auto;"></div>
+    </div>
+    <button id="startGame" class="active" style="width:100%;padding:.6em;font-size:1em;position:sticky;bottom:.5em;">Aloita peli ▶</button>
+  </div>
+
+  <!-- TILASTOT TAB -->
+  <div id="stats-content" style="display:none;">
+    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.6em;" id="statsSortBar">
+      <button class="tab active" onclick="setStatsSort('name')">A–Z</button>
+      <button class="tab" onclick="setStatsSort('wins')">Voitot</button>
+      <button class="tab" onclick="setStatsSort('games')">Pelejä</button>
+      <button class="tab" onclick="setStatsSort('avg')">P/tikka</button>
+      <button class="tab" onclick="setStatsSort('best')">Paras peli</button>
+      <button class="tab" onclick="setStatsSort('doubles')">Tuplat</button>
+      <button class="tab" onclick="setStatsSort('triples')">Triplat</button>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:.8em;">
+      <button onclick="exportData()" style="flex:1;font-size:.82em;padding:.4em;">⬇ Vie tiedot</button>
+      <label style="flex:1;">
+        <button onclick="document.getElementById('importFile').click()" style="width:100%;font-size:.82em;padding:.4em;">⬆ Tuo tiedot</button>
+        <input type="file" id="importFile" accept=".json" style="display:none;width:auto;" onchange="importData(event)">
+      </label>
+    </div>
+    <div id="statsContainer"></div>
+  </div>
+</div>
+
+<!-- ══ GAME ══ -->
+<div id="game" style="display:none;">
+  <div id="gameScroll">
+    <div id="winBanner">
+      <div class="win-title" id="winTitle"></div>
+      <div class="win-sub"   id="winSub"></div>
+    </div>
+    <div class="players-grid" id="playersContainer"></div>
+    <div class="card" id="coCard" style="display:none;">
+      <div class="card-label">Checkout</div>
+      <div class="co-row" id="checkoutSuggestions"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<!-- Fixed throw bar -->
+<div id="throwBar" style="display:none;">
+  <div id="throwBarInner">
+    <div id="throwControls">
+      <div class="tgrid" id="throwButtons"></div>
+      <hr>
+      <div class="mod-row">
+        <button class="mod" id="toggleDouble">D</button>
+        <button class="mod" id="toggleTriple">T</button>
+        <button id="undo" style="margin-left:auto;font-size:.85em;">↩ Undo</button>
+      </div>
+      <hr style="margin-top:.5em;">
+    </div>
+    <button id="endGame" class="danger-btn" style="width:100%;padding:.45em;font-size:.82em;">↩ Takaisin</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// DB
+// ══════════════════════════════════════════════════════
+const DB_KEY='darts_players_v1';
+function dbLoad(){ try{ return JSON.parse(localStorage.getItem(DB_KEY))||[]; }catch(e){ return []; } }
+function dbSave(d){ localStorage.setItem(DB_KEY,JSON.stringify(d)); }
+function dbAddPlayer(name){
+  const db=dbLoad();
+  if(db.find(p=>p.name===name)) return;
+  db.push({name,games:0,wins:0,totalScore:0,totalDarts:0,totalRounds:0,busts:0,doubles:0,triples:0,bestGame:null});
+  dbSave(db);
+}
+function dbDeletePlayer(name){ dbSave(dbLoad().filter(p=>p.name!==name)); }
+function dbRecordGame(results){
+  const db=dbLoad();
+  results.forEach(r=>{
+    let p=db.find(x=>x.name===r.name); if(!p) return;
+    p.games++; if(r.place===1) p.wins++;
+    p.totalScore+=r.scored; p.totalDarts+=r.darts;
+    p.totalRounds=(p.totalRounds||0)+r.rounds;
+    p.busts+=r.busts;
+    p.doubles=(p.doubles||0)+(r.doubles||0);
+    p.triples=(p.triples||0)+(r.triples||0);
+    if(r.darts>0){ if(p.bestGame===null||r.darts<p.bestGame) p.bestGame=r.darts; }
+  });
+  dbSave(db);
+}
+
+// ══════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════
+let players=[],setupPlayers=[],currentPlayerIndex=0;
+let startingScore=301,inMode='Single',outMode='Single';
+let doubleActive=false,tripleActive=false;
+let history=[],finishOrder=[],pendingTimeout=null,statsSaved=false;
+let gameStats={};
+
+// ══════════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════════
+function showTab(tab){
+  document.getElementById('setup-content').style.display=tab==='setup-content'?'block':'none';
+  document.getElementById('stats-content').style.display=tab==='stats-content'?'block':'none';
+  document.getElementById('tabSetup').classList.toggle('active',tab==='setup-content');
+  document.getElementById('tabStats').classList.toggle('active',tab==='stats-content');
+  if(tab==='stats-content') renderStats();
+}
+
+// ══════════════════════════════════════════════════════
+// MODE BUTTONS
+// ══════════════════════════════════════════════════════
+function updateModeButtons(){
+  document.getElementById('btn301').classList.toggle('active',startingScore===301);
+  document.getElementById('btn501').classList.toggle('active',startingScore===501);
+  document.getElementById('btnSingleIn').classList.toggle('active',inMode==='Single');
+  document.getElementById('btnDoubleIn').classList.toggle('active',inMode==='Double');
+  document.getElementById('btnSingleOut').classList.toggle('active',outMode==='Single');
+  document.getElementById('btnDoubleOut').classList.toggle('active',outMode==='Double');
+}
+document.getElementById('btn301').onclick      =()=>{startingScore=301; updateModeButtons();};
+document.getElementById('btn501').onclick      =()=>{startingScore=501; updateModeButtons();};
+document.getElementById('btnSingleIn').onclick =()=>{inMode='Single';   updateModeButtons();};
+document.getElementById('btnDoubleIn').onclick =()=>{inMode='Double';   updateModeButtons();};
+document.getElementById('btnSingleOut').onclick=()=>{outMode='Single';  updateModeButtons();};
+document.getElementById('btnDoubleOut').onclick=()=>{outMode='Double';  updateModeButtons();};
+updateModeButtons();
+
+// ══════════════════════════════════════════════════════
+// PLAYER LIST
+// ══════════════════════════════════════════════════════
+function renderPlayerList(){
+  const db=dbLoad(),div=document.getElementById('playerList');
+  div.innerHTML='';
+  if(db.length===0){div.innerHTML='<div style="font-size:.8em;color:var(--muted);padding:.4em 0;">Ei pelaajia. Lisää pelaaja alta.</div>';return;}
+  [...db].sort((a,b)=>a.name.localeCompare(b.name,'fi')).forEach(p=>{
+    const sel=setupPlayers.includes(p.name);
+    const wr=p.games>0?Math.round(p.wins/p.games*100):0;
+    const avg=p.totalDarts>0?(p.totalScore/p.totalDarts).toFixed(1):'–';
+    const e=document.createElement('div');
+    e.className='player-entry'+(sel?' selected':'');
+    e.innerHTML=`<div style="flex:1;min-width:0;" onclick="togglePlayerSelect('${p.name}')"><div class="pe-name">${p.name}</div><div class="pe-stats">${p.games} peliä · ${p.wins} voittoa (${wr}%) · avg ${avg} p/tikka</div></div><div class="pe-right"><button class="ghost" onclick="event.stopPropagation();confirmDeletePlayer('${p.name}')" title="Poista">✕</button></div>`;
+    div.appendChild(e);
+  });
+}
+function togglePlayerSelect(name){ const i=setupPlayers.indexOf(name); if(i===-1) setupPlayers.push(name); else setupPlayers.splice(i,1); renderPlayerList(); }
+function confirmDeletePlayer(name){ if(!confirm(`Poista pelaaja "${name}" ja kaikki tilastot?`)) return; dbDeletePlayer(name); setupPlayers=setupPlayers.filter(n=>n!==name); renderPlayerList(); }
+document.getElementById('addPlayer').onclick=()=>{
+  const inp=document.getElementById('newPlayer'),name=inp.value.trim();
+  if(!name) return;
+  if(dbLoad().find(p=>p.name===name)){alert('Pelaaja on jo olemassa!');return;}
+  dbAddPlayer(name); setupPlayers.push(name); inp.value=''; renderPlayerList();
+};
+document.getElementById('newPlayer').addEventListener('keydown',e=>{if(e.key==='Enter') document.getElementById('addPlayer').click();});
+
+// ══════════════════════════════════════════════════════
+// START GAME
+// ══════════════════════════════════════════════════════
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}return arr; }
+
+document.getElementById('startGame').onclick=()=>{
+  if(setupPlayers.length===0){alert('Valitse vähintään yksi pelaaja!');return;}
+  const order=shuffle([...setupPlayers]);
+  players=order.map(name=>({
+    name,score:startingScore,throws:[],roundScore:0,bust:false,
+    hasStarted:inMode==='Single',lastThrows:[],lastDelta:0,wasBust:false,
+    finished:false,place:0,isLast:false,
+  }));
+  gameStats={};
+  order.forEach(name=>{gameStats[name]={scored:0,darts:0,busts:0,rounds:0,doubles:0,triples:0};});
+  currentPlayerIndex=0; history=[]; finishOrder=[]; statsSaved=false;
+  doubleActive=false; tripleActive=false;
+  if(pendingTimeout){clearTimeout(pendingTimeout);pendingTimeout=null;}
+  document.getElementById('setup').style.display='none';
+  document.getElementById('game').style.display='block';
+  document.getElementById('winBanner').style.display='none';
+  document.getElementById('throwBar').style.display='block';
+  document.getElementById('throwControls').style.display='block';
+  renderThrowButtons(); updateToggleUI(); updateUI();
+};
+
+// ══════════════════════════════════════════════════════
+// RENDER PLAYERS
+// ══════════════════════════════════════════════════════
+function renderPlayers(){
+  const c=document.getElementById('playersContainer'); c.innerHTML='';
+  players.forEach((p,i)=>{
+    const isCurrent=i===currentPlayerIndex&&!p.finished&&!p.isLast;
+    const liveScore=p.finished?0:(p.score-p.roundScore);
+    let sc='p-score';
+    if(p.finished||p.isLast) sc+=' won-col';
+    else if(p.bust)          sc+=' bust-col';
+    else if(liveScore<=40&&liveScore>0) sc+=' warn';
+    const showPrev=!p.bust&&!p.finished&&!p.isLast&&p.throws.length===0&&p.lastThrows.length>0;
+    const src=showPrev?p.lastThrows:p.throws;
+    let dh='';
+    for(let d=0;d<3;d++){
+      if(d<src.length){const l=src[d];const cls=showPrev?'prev':l==='X'?'miss':p.bust?'bust-d':'hit';dh+=`<div class="d ${cls}">${l}</div>`;}
+      else dh+=`<div class="d empty"></div>`;
+    }
+    const medals=['🥇','🥈','🥉'];
+    const badge=p.finished?` ${medals[p.place-1]||p.place+'.'}`:p.isLast?` ${players.length}.`:'';
+    let lastH='';
+    if(!p.hasStarted&&inMode==='Double'&&p.lastThrows.length===0) lastH='<span style="color:var(--amber)">Double In</span>';
+    else if(p.lastThrows.length>0){ if(p.wasBust) lastH='<span style="color:var(--red)">BUST</span>'; else if(p.lastDelta>0) lastH=`<span style="color:var(--green)">−${p.lastDelta}</span>`; }
+    const displayScore=p.finished?0:p.isLast?p.score:liveScore;
+    const div=document.createElement('div');
+    div.className='player'+(isCurrent?' current':'')+(p.bust?' busted':'')+(p.finished||p.isLast?' won':'');
+    div.innerHTML=`<div class="p-name">${p.name}${badge}</div><div class="p-main"><div class="${sc}">${p.bust?p.score:displayScore}</div><div class="dartrow">${dh}</div></div><div class="p-last">${lastH}</div>`;
+    c.appendChild(div);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// THROW BUTTONS
+// ══════════════════════════════════════════════════════
+function renderThrowButtons(){
+  const div=document.getElementById('throwButtons'); div.innerHTML='';
+  for(let i=0;i<=20;i++){const b=document.createElement('button');b.textContent=i;b.onclick=()=>makeThrow(i);div.appendChild(b);}
+  const bull=document.createElement('button');bull.textContent='25';bull.className='bull';bull.onclick=()=>makeThrow(25);div.appendChild(bull);
+}
+document.getElementById('toggleDouble').onclick=()=>{doubleActive=!doubleActive;tripleActive=false;updateToggleUI();};
+document.getElementById('toggleTriple').onclick=()=>{tripleActive=!tripleActive;doubleActive=false;updateToggleUI();};
+function updateToggleUI(){ document.getElementById('toggleDouble').classList.toggle('active',doubleActive); document.getElementById('toggleTriple').classList.toggle('active',tripleActive); }
+
+// ══════════════════════════════════════════════════════
+// UNDO
+// ══════════════════════════════════════════════════════
+document.getElementById('undo').onclick=()=>{
+  if(history.length===0) return;
+  if(pendingTimeout){clearTimeout(pendingTimeout);pendingTimeout=null;}
+  const snap=history.pop();
+  currentPlayerIndex=snap.playerIndex;
+  const p=players[currentPlayerIndex];
+  p.score=snap.prevScore; p.throws=snap.prevThrows; p.roundScore=snap.prevRoundScore;
+  p.bust=snap.prevBust; p.hasStarted=snap.prevHasStarted;
+  p.lastThrows=snap.prevLastThrows; p.lastDelta=snap.prevLastDelta;
+  p.wasBust=snap.prevWasBust; p.finished=snap.prevFinished;
+  p.place=snap.prevPlace; p.isLast=snap.prevIsLast;
+  finishOrder=snap.prevFinishOrder;
+  gameStats=JSON.parse(snap.prevGameStats);
+  doubleActive=false; tripleActive=false; updateToggleUI();
+  const sp=players.filter(p=>!p.finished&&!p.isLast).length;
+  document.getElementById('throwControls').style.display=sp>0?'block':'none';
+  updateWinBanner(); updateUI();
+};
+
+// ══════════════════════════════════════════════════════
+// THROW LOGIC
+// ══════════════════════════════════════════════════════
+function makeThrow(value){
+  const player=players[currentPlayerIndex];
+  if(player.finished||player.isLast||player.throws.length>=3) return;
+  if(value===25&&tripleActive){alert('25 ei voi olla Triple!');return;}
+  const mul=tripleActive?3:doubleActive?2:1;
+  const isDouble=mul===2,isTriple=mul===3,isBull=value===25&&doubleActive;
+  const actual=isBull?50:value*mul;
+  const label=value===0?'0':isBull?'Bull':value===25?'25':isTriple?`T${value}`:isDouble?`D${value}`:`${value}`;
+
+  history.push({
+    playerIndex:currentPlayerIndex,prevScore:player.score,prevThrows:[...player.throws],
+    prevRoundScore:player.roundScore,prevBust:player.bust,prevHasStarted:player.hasStarted,
+    prevLastThrows:[...player.lastThrows],prevLastDelta:player.lastDelta,prevWasBust:player.wasBust,
+    prevFinished:player.finished,prevPlace:player.place,prevIsLast:player.isLast,
+    prevFinishOrder:[...finishOrder],prevGameStats:JSON.stringify(gameStats),
+  });
+
+  if(!player.hasStarted){
+    if(isDouble||isBull){ player.hasStarted=true; }
+    else{
+      player.throws.push('X'); gameStats[player.name].darts++;
+      doubleActive=false;tripleActive=false;updateToggleUI();
+      if(player.throws.length===3){ updateUI(); pendingTimeout=setTimeout(()=>{pendingTimeout=null;advance(player,false);},500); }
+      else updateUI();
+      return;
+    }
+  }
+
+  player.throws.push(label); player.roundScore+=actual;
+  gameStats[player.name].darts++;
+  if(actual>0) gameStats[player.name].scored+=actual;
+  if(isDouble||isBull) gameStats[player.name].doubles++;
+  if(isTriple)         gameStats[player.name].triples++;
+
+  const remaining=player.score-player.roundScore;
+  const bust=remaining<0||(remaining===1&&outMode==='Double')||(remaining===0&&outMode==='Double'&&!isDouble&&!isBull);
+  doubleActive=false;tripleActive=false;updateToggleUI();
+
+  if(bust){
+    player.bust=true; gameStats[player.name].busts++; updateUI();
+    pendingTimeout=setTimeout(()=>{pendingTimeout=null;advance(player,true);},900);
+    return;
+  }
+
+  if(remaining===0){
+    player.score=0; player.finished=true;
+    finishOrder.push(player.name); player.place=finishOrder.length;
+    if(gameStats[player.name]) gameStats[player.name].rounds++;
+    const stillPlaying=players.filter(p=>!p.finished);
+    updateUI(); updateWinBanner();
+    if(stillPlaying.length<=1){
+      if(stillPlaying.length===1){ const last=stillPlaying[0]; last.isLast=true; last.place=finishOrder.length+1; updateUI(); }
+      document.getElementById('throwControls').style.display='none';
+      updateWinBanner(); saveGameStats();
+      return;
+    }
+    pendingTimeout=setTimeout(()=>{ pendingTimeout=null; player.lastThrows=[...player.throws]; player.throws=[];player.roundScore=0; advanceToNextActive(); },800);
+    return;
+  }
+
+  if(player.throws.length===3){ player.score-=player.roundScore; pendingTimeout=setTimeout(()=>{pendingTimeout=null;advance(player,false);},600); return; }
+  updateUI();
+}
+
+function advance(player,wasBust){
+  player.lastThrows=[...player.throws]; player.lastDelta=wasBust?0:player.roundScore;
+  player.wasBust=wasBust;
+  if(gameStats[player.name]) gameStats[player.name].rounds++;
+  player.throws=[];player.roundScore=0;player.bust=false;
+  advanceToNextActive();
+}
+function advanceToNextActive(){
+  let next=(currentPlayerIndex+1)%players.length,loops=0;
+  while(players[next].finished||players[next].isLast){next=(next+1)%players.length;if(++loops>=players.length) break;}
+  currentPlayerIndex=next; updateUI();
+}
+
+// ══════════════════════════════════════════════════════
+// SAVE STATS
+// ══════════════════════════════════════════════════════
+function saveGameStats(){
+  if(statsSaved) return; statsSaved=true;
+  dbRecordGame(players.map(p=>({
+    name:p.name,place:p.place,
+    scored:gameStats[p.name]?.scored||0, darts:gameStats[p.name]?.darts||0,
+    busts:gameStats[p.name]?.busts||0,   rounds:gameStats[p.name]?.rounds||0,
+    doubles:gameStats[p.name]?.doubles||0, triples:gameStats[p.name]?.triples||0,
+    finished:p.finished,
+  })));
+}
+
+// ══════════════════════════════════════════════════════
+// WIN BANNER
+// ══════════════════════════════════════════════════════
+function updateWinBanner(){
+  const banner=document.getElementById('winBanner');
+  if(finishOrder.length===0){banner.style.display='none';return;}
+  banner.style.display='block';
+  document.getElementById('winTitle').textContent=`🏆 ${finishOrder[0]} voitti!`;
+  const remaining=players.filter(p=>!p.finished&&!p.isLast);
+  const lastPlayer=players.find(p=>p.isLast);
+  const allPlaced=[...finishOrder,...(lastPlayer?[lastPlayer.name]:[])];
+  document.getElementById('winSub').textContent=remaining.length===0
+    ?(allPlaced.length>1?'Sijoitukset: '+allPlaced.join(' › '):'Peli päättyi!')
+    :`Peli jatkuu — ${remaining.length} pelaajaa jäljellä`;
+}
+
+function updateUI(){ renderPlayers(); renderCheckout(); }
+
+// ══════════════════════════════════════════════════════
+// END GAME
+// ══════════════════════════════════════════════════════
+function endGame(){
+  if(pendingTimeout){clearTimeout(pendingTimeout);pendingTimeout=null;}
+  if(players.some(p=>p.finished)) saveGameStats();
+  document.getElementById('game').style.display='none';
+  document.getElementById('setup').style.display='block';
+  document.getElementById('winBanner').style.display='none';
+  document.getElementById('throwBar').style.display='none';
+  document.getElementById('throwControls').style.display='block';
+  renderPlayerList();
+}
+document.getElementById('endGame').onclick=()=>{ if(!confirm('Lopeta peli ja palaa aloitukseen?')) return; endGame(); };
+
+// ══════════════════════════════════════════════════════
+// CHECKOUT TABLES
+// Each table lists the best suggestion for that number of darts remaining.
+// Entries ending in D# or Bull are valid for Double Out.
+// Entries ending in a plain number are Single Out only.
+// ══════════════════════════════════════════════════════
+
+// 1 dart remaining — finish in 1 dart
+// Double Out: only even ≤40 or Bull (50)
+// Single Out: any value 1–20 or 25
+const FINISH_1 = {
+  // Doubles (valid for both modes)
+  2:'D1', 4:'D2', 6:'D3', 8:'D4', 10:'D5',
+  12:'D6', 14:'D7', 16:'D8', 18:'D9', 20:'D10',
+  22:'D11', 24:'D12', 26:'D13', 28:'D14', 30:'D15',
+  32:'D16', 34:'D17', 36:'D18', 38:'D19', 40:'D20',
+  50:'Bull',
+  // Singles (Single Out only — odd and non-double values)
+  1:'1', 3:'3', 5:'5', 7:'7', 9:'9',
+  11:'11', 13:'13', 15:'15', 17:'17', 19:'19',
+  25:'25',
+};
+
+// 2 darts remaining
+// Keys cover all reachable values 2–110
+// For Double Out: suggestion must end in D# or Bull
+// For Single Out: any finish is valid
+const FINISH_2 = {
+  // Pure doubles (1 dart = 0, 1 dart = double) — also valid for Double Out
+  2:'D1', 4:'D2', 6:'D3', 8:'D4', 10:'D5',
+  12:'D6', 14:'D7', 16:'D8', 18:'D9', 20:'D10',
+  22:'D11', 24:'D12', 26:'D13', 28:'D14', 30:'D15',
+  32:'D16', 34:'D17', 36:'D18', 38:'D19', 40:'D20',
+  50:'Bull',
+  // Single + double (Double Out valid)
+  41:'1 D20', 42:'2 D20', 43:'3 D20', 44:'4 D20',
+  45:'5 D20', 46:'6 D20', 47:'7 D20', 48:'8 D20',
+  49:'9 D20', 51:'11 D20', 52:'12 D20', 53:'13 D20',
+  54:'14 D20', 55:'15 D20', 56:'16 D20', 57:'17 D20',
+  58:'18 D20', 59:'19 D20', 60:'20 D20',
+  61:'T7 D20', 62:'T10 D16', 63:'T13 D12', 64:'T16 D8',
+  65:'T15 D10', 66:'T10 D18', 67:'T17 D8', 68:'T20 D4',
+  69:'T19 D6', 70:'T18 D8', 71:'T13 D16', 72:'T16 D12',
+  73:'T19 D8', 74:'T14 D16', 75:'T15 D15', 76:'T20 D8',
+  77:'T19 D10', 78:'T18 D12', 79:'T13 D20', 80:'T20 D10',
+  81:'T19 D12', 82:'T14 D20', 83:'T17 D16', 84:'T20 D12',
+  85:'T15 D20', 86:'T18 D16', 87:'T17 D18', 88:'T20 D14',
+  89:'T19 D16', 90:'T18 D18', 91:'T17 D20', 92:'T20 D16',
+  93:'T19 D18', 94:'T18 D20', 95:'T19 D19', 96:'T20 D18',
+  97:'T19 D20', 98:'T20 D19', 100:'T20 D20',
+  // Single Out only (odd values not reachable as T+D)
+  // These use single finishes — shown only in Single Out mode
+  99:'T19 2', 101:'T17 10', 103:'T19 6',
+  // Additional values reachable in 2 darts with single finish
+  21:'1 10', 23:'3 10', 25:'5 10', 27:'7 10', 29:'9 10',
+  31:'11 10', 33:'13 10', 35:'15 10', 37:'17 10', 39:'19 10',
+};
+
+// 3 darts remaining — complete table 2–170
+const FINISH_3 = {
+  // Unreachable: 163, 162, 159 (no valid 3-dart combination exists)
+  // Verified reachable 3-dart checkouts:
+  170:'T20 T20 Bull', 167:'T20 T19 Bull', 164:'T20 T18 Bull', 161:'T20 T17 Bull',
+  160:'T20 T20 D20', 158:'T20 T20 D19', 157:'T20 T19 D20', 156:'T20 T20 D18',
+  155:'T20 T19 D19', 154:'T20 T18 D20', 153:'T20 T19 D18', 152:'T20 T20 D16',
+  151:'T20 T17 D20', 150:'T20 T18 D18', 149:'T20 T19 D16', 148:'T20 T20 D14',
+  147:'T20 T17 D18', 146:'T20 T18 D16', 145:'T20 T15 D20', 144:'T20 T20 D12',
+  143:'T20 T17 D16', 142:'T20 T14 D20', 141:'T20 T19 D12', 140:'T20 T20 D10',
+  139:'T20 T13 D20', 138:'T20 T18 D12', 137:'T20 T19 D10', 136:'T20 T20 D8',
+  135:'T20 T15 D15', 134:'T20 T14 D16', 133:'T20 T19 D8',  132:'T20 T16 D12',
+  131:'T20 T13 D16', 130:'T20 T18 D8',  129:'T19 T16 D12', 128:'T20 T16 D10',
+  127:'T20 T17 D8',  126:'T19 T19 D6',  125:'T20 T15 D10', 124:'T20 T16 D8',
+  123:'T19 T16 D9',  122:'T18 T18 D7',  121:'T20 T11 D14', 120:'T20 20 D20',
+  119:'T19 T12 D13', 118:'T20 18 D20',  117:'T20 17 D20',  116:'T20 16 D20',
+  115:'T20 15 D20',  114:'T20 14 D20',  113:'T20 13 D20',  112:'T20 12 D20',
+  111:'T20 11 D20',  110:'T20 10 D20',  109:'T20 9 D20',   108:'T20 8 D20',
+  107:'T19 10 D20',  106:'T20 6 D20',   105:'T20 5 D20',   104:'T18 18 D16',
+  103:'T19 6 D20',   102:'T20 10 D16',  101:'T17 10 D20',  100:'T20 D20',
+  99:'T19 10 D16',   98:'T20 D19',      97:'T19 D20',      96:'T20 D18',
+  95:'T19 D19',      94:'T18 D20',      93:'T19 D18',      92:'T20 D16',
+  91:'T17 D20',      90:'T18 D18',      89:'T19 D16',      88:'T20 D14',
+  87:'T17 D18',      86:'T18 D16',      85:'T15 D20',      84:'T20 D12',
+  83:'T17 D16',      82:'T14 D20',      81:'T19 D12',      80:'T20 D10',
+  79:'T13 D20',      78:'T18 D12',      77:'T19 D10',      76:'T20 D8',
+  75:'T15 D15',      74:'T14 D16',      73:'T19 D8',       72:'T16 D12',
+  71:'T13 D16',      70:'T18 D8',       69:'T19 D6',       68:'T20 D4',
+  67:'T17 D8',       66:'T10 D18',      65:'T15 D10',      64:'T16 D8',
+  63:'T13 D12',      62:'T10 D16',      61:'T15 D8',       60:'20 D20',
+  59:'19 D20',       58:'18 D20',       57:'17 D20',       56:'16 D20',
+  55:'15 D20',       54:'14 D20',       53:'13 D20',       52:'12 D20',
+  51:'11 D20',       50:'Bull',         49:'9 D20',        48:'16 D16',
+  47:'15 D16',       46:'10 D18',       45:'13 D16',       44:'12 D16',
+  43:'11 D16',       42:'10 D16',       41:'9 D16',        40:'D20',
+  39:'7 D16',        38:'D19',          37:'5 D16',        36:'D18',
+  35:'3 D16',        34:'D17',          33:'1 D16',        32:'D16',
+  31:'7 D12',        30:'D15',          29:'5 D12',        28:'D14',
+  27:'3 D12',        26:'D13',          25:'1 D12',        24:'D12',
+  23:'7 D8',         22:'D11',          21:'5 D8',         20:'D10',
+  19:'3 D8',         18:'D9',           17:'1 D8',         16:'D8',
+  15:'7 D4',         14:'D7',           13:'5 D4',         12:'D6',
+  11:'3 D4',         10:'D5',           9:'1 D4',          8:'D4',
+  7:'3 D2',          6:'D3',            5:'1 D2',          4:'D2',
+  3:'1 D1',          2:'D1',
+};
+
+// Helper: does a suggestion end in a double or Bull? (valid for Double Out)
+function isDoubleOutFinish(s){
+  if(!s) return false;
+  const last=s.split(' ').pop();
+  return last==='Bull'||last.startsWith('D');
+}
+
+function renderCheckout(){
+  const div=document.getElementById('checkoutSuggestions'),card=document.getElementById('coCard');
+  div.innerHTML='';
+  const player=players[currentPlayerIndex];
+  if(!player||!player.hasStarted||player.finished||player.isLast){card.style.display='none';return;}
+
+  const rem=player.score-player.roundScore;
+  const dl=3-player.throws.length; // darts left this turn
+
+  // Only show checkout if it's reachable in the darts remaining
+  if(rem<2||rem>170){card.style.display='none';return;}
+  // 1 dart left: max finish is 50 (Bull) or 40 (D20) for double out, 25 for single
+  if(dl===1&&rem>50){card.style.display='none';return;}
+  // 2 darts left: max finish is 110 (T20+D25 not valid; T20+D20=100; but with single: 20+D20=60... T20 counts)
+  // Actually max 2-dart: T20(60)+D20(40)=100, or 20+Bull=70. Practically covered by table up to 110.
+  if(dl===2&&rem>110){card.style.display='none';return;}
+
+  let s=null;
+
+  if(dl===1){
+    const x=FINISH_1[rem];
+    if(x){
+      if(outMode==='Double'){
+        // Only show if it's a double or Bull finish
+        if(isDoubleOutFinish(x)) s=x;
+      } else {
+        s=x;
+      }
+    }
+  } else if(dl===2){
+    const x=FINISH_2[rem];
+    if(x){
+      if(outMode==='Double'){
+        if(isDoubleOutFinish(x)) s=x;
+      } else {
+        s=x;
+      }
+    }
+  } else {
+    // 3 darts: show for all values 2–170
+    s=FINISH_3[rem]||null;
+    if(s&&outMode==='Double'&&!isDoubleOutFinish(s)) s=null;
+  }
+
+  if(s){
+    card.style.display='block';
+    const b=document.createElement('button');
+    b.className='co';
+    b.textContent=`${rem} → ${s}`;
+    div.appendChild(b);
+  } else {
+    card.style.display='none';
+  }
+}
+
+// ══════════════════════════════════════════════════════
+// STATS
+// ══════════════════════════════════════════════════════
+let statsSortKey='name';
+function setStatsSort(key){
+  statsSortKey=key;
+  document.querySelectorAll('#statsSortBar button').forEach(b=>{b.classList.toggle('active',b.getAttribute('onclick').includes(`'${key}'`));});
+  renderStats();
+}
+function renderStats(){
+  const db=dbLoad(),div=document.getElementById('statsContainer');
+  div.innerHTML='';
+  if(db.length===0){div.innerHTML='<div style="color:var(--muted);font-size:.9em;">Ei pelaajia vielä.</div>';return;}
+  const sorted=[...db].sort((a,b)=>{
+    switch(statsSortKey){
+      case 'wins':    return b.wins-a.wins||a.name.localeCompare(b.name,'fi');
+      case 'games':   return b.games-a.games||a.name.localeCompare(b.name,'fi');
+      case 'avg':     {const aa=a.totalDarts>0?a.totalScore/a.totalDarts:-1;const ba=b.totalDarts>0?b.totalScore/b.totalDarts:-1;return ba-aa||a.name.localeCompare(b.name,'fi');}
+      case 'best':    {if(a.bestGame===null&&b.bestGame===null)return a.name.localeCompare(b.name,'fi');if(a.bestGame===null)return 1;if(b.bestGame===null)return -1;return a.bestGame-b.bestGame||a.name.localeCompare(b.name,'fi');}
+      case 'doubles': return (b.doubles||0)-(a.doubles||0)||a.name.localeCompare(b.name,'fi');
+      case 'triples': return (b.triples||0)-(a.triples||0)||a.name.localeCompare(b.name,'fi');
+      default:        return a.name.localeCompare(b.name,'fi');
+    }
+  });
+  sorted.forEach(p=>{
+    const wr=p.games>0?Math.round(p.wins/p.games*100):0;
+    const avg=p.totalDarts>0?(p.totalScore/p.totalDarts).toFixed(1):'–';
+    const dpg=p.games>0?Math.round(p.totalDarts/p.games):'–';
+    const card=document.createElement('div');card.className='stats-card';
+    card.innerHTML=`<div class="stats-name">${p.name}</div><div class="stats-grid">
+      <div class="stat-item"><div class="stat-label">Pelejä</div><div class="stat-val">${p.games}</div></div>
+      <div class="stat-item"><div class="stat-label">Voittoja</div><div class="stat-val gold">${p.wins} <span style="font-size:.55em;color:var(--muted)">(${wr}%)</span></div></div>
+      <div class="stat-item"><div class="stat-label">Pistettä/tikka</div><div class="stat-val green">${avg}</div></div>
+      <div class="stat-item"><div class="stat-label">Tikkaa/peli</div><div class="stat-val">${dpg}</div></div>
+      <div class="stat-item"><div class="stat-label">Busteja</div><div class="stat-val" style="color:var(--red)">${p.busts}</div></div>
+      <div class="stat-item"><div class="stat-label">Tuplat</div><div class="stat-val" style="color:var(--blue)">${p.doubles||0}</div></div>
+      <div class="stat-item"><div class="stat-label">Triplat</div><div class="stat-val" style="color:var(--amber)">${p.triples||0}</div></div>
+      <div class="stat-item"><div class="stat-label">Paras peli</div><div class="stat-val gold">${p.bestGame!==null?p.bestGame+' tikkaa':'–'}</div></div>
+    </div>`;
+    div.appendChild(card);
+  });
+}
+
+// ══════════════════════════════════════════════════════
+// EXPORT / IMPORT
+// ══════════════════════════════════════════════════════
+function exportData(){
+  const blob=new Blob([JSON.stringify(dbLoad(),null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=`darts_tilastot_${new Date().toISOString().slice(0,10)}.json`; a.click(); URL.revokeObjectURL(url);
+}
+function importData(event){
+  const file=event.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!Array.isArray(data)||!data.every(p=>typeof p.name==='string')) throw new Error('Virheellinen tiedosto');
+      const existing=dbLoad(); let added=0,merged=0;
+      data.forEach(inc=>{
+        const match=existing.find(p=>p.name===inc.name);
+        if(match){
+          match.games+=inc.games||0; match.wins+=inc.wins||0;
+          match.totalScore+=inc.totalScore||0; match.totalDarts+=inc.totalDarts||0;
+          match.totalRounds=(match.totalRounds||0)+(inc.totalRounds||0);
+          match.busts+=inc.busts||0;
+          match.doubles=(match.doubles||0)+(inc.doubles||0);
+          match.triples=(match.triples||0)+(inc.triples||0);
+          const ib=inc.bestGame; if(ib!=null) match.bestGame=match.bestGame===null?ib:Math.min(match.bestGame,ib);
+          merged++;
+        } else {
+          existing.push({name:inc.name,games:inc.games||0,wins:inc.wins||0,totalScore:inc.totalScore||0,totalDarts:inc.totalDarts||0,totalRounds:inc.totalRounds||0,busts:inc.busts||0,doubles:inc.doubles||0,triples:inc.triples||0,bestGame:inc.bestGame??null});
+          added++;
+        }
+      });
+      dbSave(existing); event.target.value=''; renderPlayerList(); renderStats();
+      alert(`Tuonti valmis: ${added} uutta pelaajaa lisätty, ${merged} pelaajan tilastot yhdistetty.`);
+    }catch(err){ alert('Tiedoston lukeminen epäonnistui: '+err.message); }
+  };
+  reader.readAsText(file);
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+renderPlayerList();
+</script>
+</body>
+</html>
