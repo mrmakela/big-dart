@@ -357,14 +357,14 @@ body{font-size:15px;}
       <button class="tab" onclick="setStatsSort('doubles')">Tuplat</button>
       <button class="tab" onclick="setStatsSort('triples')">Triplat</button>
     </div>
-    <div style="display:flex;gap:6px;margin-bottom:.8em;">
+    <div id="statsContainer"></div>
+    <div style="display:flex;gap:6px;margin-top:.4em;">
       <button onclick="exportData()" style="flex:1;font-size:.82em;padding:.4em;">⬇ Vie tiedot</button>
       <label style="flex:1;">
         <button onclick="document.getElementById('importFile').click()" style="width:100%;font-size:.82em;padding:.4em;">⬆ Tuo tiedot</button>
         <input type="file" id="importFile" accept=".json" style="display:none;width:auto;" onchange="importData(event)">
       </label>
     </div>
-    <div id="statsContainer"></div>
   </div>
 </div>
 
