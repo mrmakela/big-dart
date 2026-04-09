@@ -99,52 +99,79 @@ hr{border:none;border-top:1px solid var(–border);margin:.5em 0;}
 .p-score.warn{color:var(–amber);}
 .p-score.bust-col{color:var(–red);}
 .p-score.won-col{color:var(–gold);}
-.dartrow{display:flex;gap:3px;flex:1;}
-.d{flex:1;height:1.6em;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:.7em;font-weight:700;background:var(–surface);border:1px solid var(–border);min-width:0;}
-.d.empty{border-style:dashed;opacity:.2;}
-.d.miss{color:var(–muted);}
-.d.hit{color:#eee;}
-.d.bust-d{color:var(–red);}
-.d.prev{color:#666;font-style:italic;}
+/* Dart slots — clearly visible against player card background */
+.dartrow{display:flex;gap:4px;flex:1;}
+.d{
+flex:1;height:1.8em;
+display:flex;align-items:center;justify-content:center;
+border-radius:5px;font-size:.72em;font-weight:700;
+background:#222;background:rgba(0,0,0,0.35);
+border:1.5px solid #888;
+color:#bbb;
+min-width:0;
+}
+.d.empty{border-style:dashed;border-color:#555;opacity:.5;}
+.d.miss{color:#888;}
+.d.hit{color:#fff;}
+.d.bust-d{color:#f08080;border-color:#c06060;}
+.d.prev{color:#666;font-style:italic;border-color:#555;}
 .p-last{font-size:.72em;font-weight:700;margin-top:.18em;}
 
 /* Win banner */
-#winBanner{display:none;background:linear-gradient(135deg,#2a2a1a,#333320);border:1px solid var(–gold);border-radius:var(–r);padding:.9em 1em;margin-bottom:.6em;text-align:center;}
-#winBanner .win-title{font-family:‘Bebas Neue’,sans-serif;font-size:1.7em;color:var(–gold);letter-spacing:.1em;}
+#winBanner{display:none;background:linear-gradient(135deg,#2a2a1a,#333320);border:2px solid #d4a840;border-color:var(–gold);border-radius:var(–r);padding:.9em 1em;margin-bottom:.6em;text-align:center;}
+#winBanner .win-title{font-family:‘Bebas Neue’,sans-serif;font-size:1.7em;color:#d4a840;color:var(–gold);letter-spacing:.1em;}
 #winBanner .win-sub{font-size:.82em;color:#bbb;margin-top:.2em;}
 
-/* Setup player list */
-.player-entry{display:flex;align-items:center;background:var(–surface2);border:1.5px solid var(–border);border-radius:9px;padding:.45em .5em .45em .7em;margin-bottom:.4em;cursor:pointer;transition:border-color .12s;gap:.5em;min-height:52px;}
-.player-entry:hover{border-color:#888;}
-.player-entry.selected{border-color:var(–green);background:rgba(126,203,143,.08);}
-.pe-emoji{font-size:1.4em;flex-shrink:0;cursor:pointer;padding:.15em .25em;border-radius:6px;min-width:2.2em;text-align:center;}
-.pe-emoji:hover{background:rgba(255,255,255,.1);}
-.pe-name{font-size:.93em;font-weight:600;}
-.pe-stats{font-size:.72em;color:var(–muted);margin-top:.1em;}
+/* Setup player list — selected clearly brighter */
+.player-entry{
+display:flex;align-items:center;
+background:#3d3d3d;background:var(–surface2);
+border:2px solid #555;
+border-radius:9px;
+padding:.45em .5em .45em .7em;
+margin-bottom:.4em;cursor:pointer;
+transition:border-color .15s,background .15s;
+gap:.5em;min-height:52px;
+}
+.player-entry:hover{border-color:#888;background:#454545;}
+.player-entry.selected{
+border-color:#7ecb8f;border-color:var(–green);
+background:#2a4a30;  /* clearly distinct green-tinted background */
+box-shadow:0 0 0 1px #7ecb8f;box-shadow:0 0 0 1px var(–green);
+}
+.player-entry.selected .pe-name{color:#7ecb8f;color:var(–green);}
+.pe-name{font-size:.93em;font-weight:600;color:#f0f0f0;}
+.pe-stats{font-size:.72em;color:#999;color:var(–muted);margin-top:.1em;}
 .pe-right{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:auto;}
 
-/* Emoji picker */
-.emoji-picker{background:var(–surface);border:1px solid var(–border);border-radius:var(–r);padding:.6em;margin-bottom:.4em;display:flex;flex-wrap:wrap;gap:6px;}
-.emoji-picker span{font-size:1.5em;cursor:pointer;padding:.18em .25em;border-radius:6px;border:1.5px solid transparent;min-width:2.2em;text-align:center;}
-.emoji-picker span:hover{background:rgba(255,255,255,.1);}
-.emoji-picker span.selected{border-color:var(–green);background:rgba(126,203,143,.15);}
-
-/* Stats */
-.stats-card{background:var(–surface2);border:1px solid var(–border);border-radius:var(–r);padding:.9em 1em;margin-bottom:.6em;}
-.stats-name{font-size:1.1em;font-weight:700;margin-bottom:.5em;}
+/* Stats — each player clearly boxed off */
+.stats-card{
+background:#333;background:var(–surface);
+border:2px solid #555;border-color:var(–border);
+border-radius:var(–r);
+padding:.9em 1em;
+margin-bottom:1em;           /* extra space between players */
+}
+.stats-name{font-size:1.1em;font-weight:700;margin-bottom:.6em;padding-bottom:.4em;border-bottom:1px solid #555;border-bottom-color:var(–border);}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5em;}
-.stat-item{background:var(–surface);border-radius:8px;padding:.45em .65em;}
-.stat-label{font-size:.65em;text-transform:uppercase;letter-spacing:.08em;color:var(–muted);}
-.stat-val{font-family:‘Bebas Neue’,sans-serif;font-size:1.5em;color:var(–text);line-height:1.1;}
-.stat-val.green{color:var(–green);}
-.stat-val.gold{color:var(–gold);}
+.stat-item{background:#3d3d3d;background:var(–surface2);border:1px solid #555;border-color:var(–border);border-radius:8px;padding:.45em .65em;}
+.stat-label{font-size:.65em;text-transform:uppercase;letter-spacing:.08em;color:#999;color:var(–muted);}
+.stat-val{font-family:‘Bebas Neue’,sans-serif;font-size:1.5em;color:#f0f0f0;color:var(–text);line-height:1.1;}
+.stat-val.green{color:#7ecb8f;color:var(–green);}
+.stat-val.gold{color:#d4a840;color:var(–gold);}
 
-/* Diary */
-.diary-entry{background:var(–surface2);border:1px solid var(–border);border-radius:var(–r);padding:.65em .9em;margin-bottom:.4em;}
-.diary-date{font-size:.7em;color:var(–muted);margin-bottom:.3em;}
-.diary-players{display:flex;flex-wrap:wrap;gap:.35em;}
-.diary-player{font-size:.83em;padding:.2em .55em;border-radius:20px;background:var(–surface);border:1px solid var(–border);}
-.diary-player.winner{border-color:var(–gold);color:var(–gold);font-weight:700;}
+/* Diary — each game entry clearly boxed */
+.diary-entry{
+background:#333;background:var(–surface);
+border:2px solid #555;border-color:var(–border);
+border-radius:var(–r);
+padding:.7em .9em;
+margin-bottom:.7em;
+}
+.diary-date{font-size:.7em;color:#999;color:var(–muted);margin-bottom:.4em;padding-bottom:.3em;border-bottom:1px solid #555;border-bottom-color:var(–border);}
+.diary-players{display:flex;flex-wrap:wrap;gap:.4em;}
+.diary-player{font-size:.85em;padding:.25em .65em;border-radius:20px;background:#3d3d3d;background:var(–surface2);border:1.5px solid #666;}
+.diary-player.winner{border-color:#d4a840;border-color:var(–gold);color:#d4a840;color:var(–gold);font-weight:700;background:#2a2a1a;}
 
 /* Input */
 input[type=text]{
