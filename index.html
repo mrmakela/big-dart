@@ -7,6 +7,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
+<!-- v3 -->
 <title>Darts 🎯</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -30,36 +31,38 @@
   --r:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16px;}
-header{text-align:center;padding:.6em 1em .4em;font-family:'Bebas Neue',sans-serif;font-size:1.9em;color:var(--green);letter-spacing:.1em;}
+body{font-family:'DM Sans',sans-serif;background:#2a2a2a;background:var(--bg);color:#f0f0f0;color:var(--text);min-height:100vh;font-size:16px;}
+header{text-align:center;padding:.6em 1em .4em;font-family:'Bebas Neue',sans-serif;font-size:1.9em;color:#7ecb8f;color:var(--green);letter-spacing:.1em;}
 
 /* Wrap — always 12px margin from edges */
 .wrap{max-width:700px;margin:auto;padding:0 .8em 1em;}
 
 /* Fixed bottom */
 #gameScroll{padding-bottom:230px;}
-#throwBar{position:fixed;bottom:0;left:0;right:0;background:var(–surface);border-top:2px solid var(–border);padding:.6em .8em env(safe-area-inset-bottom,.6em);z-index:100;}
+#throwBar{position:fixed;bottom:0;left:0;right:0;background:#333;background:var(–surface);border-top:2px solid rgba(255,255,255,0.12);border-top-color:var(–border);padding:.6em .8em env(safe-area-inset-bottom,.6em);z-index:100;}
 #throwBarInner{max-width:700px;margin:auto;}
 
 /* Cards */
-.card{background:var(–surface);border:1px solid var(–border);border-radius:var(–r);padding:.7em .9em;margin-bottom:.6em;}
-.card-label{font-size:.65em;text-transform:uppercase;letter-spacing:.12em;color:var(–muted);margin-bottom:.5em;}
+.card{background:#333;background:var(–surface);border:1px solid rgba(255,255,255,0.12);border-color:var(–border);border-radius:var(–r);padding:.7em .9em;margin-bottom:.6em;}
+.card-label{font-size:.65em;text-transform:uppercase;letter-spacing:.12em;color:#999;color:var(–muted);margin-bottom:.5em;}
 
 /* ── BUTTONS — light grey inactive, light green active ── */
 button{
 padding:.6em 1.1em;
 margin:.2em;
-border:1.5px solid var(–btn-border);
+border:1.5px solid #666;
+border-color:var(–btn-border);
 border-radius:9px;
 cursor:pointer;
+background:#555;
 background:var(–btn);
+color:#f0f0f0;
 color:var(–text);
 font-family:‘DM Sans’,sans-serif;
 font-size:1em;
 font-weight:600;
 transition:background .12s,border-color .12s;
 line-height:1.3;
-/* touch — minimum tap target 44px */
 min-height:44px;
 -webkit-tap-highlight-color:transparent;
 -webkit-appearance:none;
@@ -67,15 +70,15 @@ appearance:none;
 }
 button:hover{background:#666;border-color:#888;}
 button:active{opacity:.8;}
-button.active{background:var(–green);border-color:var(–green);color:var(–text-dark);font-weight:700;}
-button.co{background:var(–blue);border-color:var(–blue);color:#000;font-weight:700;font-size:.85em;}
-button.danger-btn{background:var(–red);border-color:var(–red);color:#fff;}
-button.ghost{background:transparent;border-color:transparent;color:var(–muted);font-size:.85em;padding:.3em .5em;min-height:36px;}
-button.ghost:hover{color:var(–red);border-color:var(–red);background:transparent;}
+button.active{background:#7ecb8f;background:var(–green);border-color:#7ecb8f;border-color:var(–green);color:#111;color:var(–text-dark);font-weight:700;}
+button.co{background:#6ab4f5;background:var(–blue);border-color:#6ab4f5;border-color:var(–blue);color:#000;font-weight:700;font-size:.85em;}
+button.danger-btn{background:#e06060;background:var(–red);border-color:#e06060;border-color:var(–red);color:#fff;}
+button.ghost{background:transparent;border-color:transparent;color:#999;color:var(–muted);font-size:.85em;padding:.3em .5em;min-height:36px;}
+button.ghost:hover{color:#e06060;color:var(–red);border-color:#e06060;border-color:var(–red);background:transparent;}
 button.mod{font-weight:800;font-size:1.1em;min-width:3.2em;padding:.5em .6em;min-height:48px;}
-button.mod.active{background:var(–amber);border-color:var(–amber);color:#000;}
+button.mod.active{background:#d4a840;background:var(–amber);border-color:#d4a840;border-color:var(–amber);color:#000;}
 button.tab{border-radius:7px;font-size:.88em;padding:.5em .9em;min-height:40px;}
-button.tab.active{background:var(–green);border-color:var(–green);color:var(–text-dark);}
+button.tab.active{background:#7ecb8f;background:var(–green);border-color:#7ecb8f;border-color:var(–green);color:#111;color:var(–text-dark);}
 
 /* Throw grid */
 .tgrid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.6em;}
