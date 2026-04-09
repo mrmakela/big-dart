@@ -473,11 +473,9 @@ function renderPlayerList(){
     const sel=setupPlayers.includes(p.name);
     const wr=p.games>0?Math.round(p.wins/p.games*100):0;
     const avg=p.totalDarts>0?(p.totalScore/p.totalDarts).toFixed(1):'–';
-    const emoji=p.emoji||'🎯';
     const e=document.createElement('div');
     e.className='player-entry'+(sel?' selected':'');
     e.innerHTML=`
-      <span class="pe-emoji" title="Vaihda emoji" onclick="event.stopPropagation();showEmojiPicker('${p.name}',this)">${emoji}</span>
       <div style="flex:1;min-width:0;" onclick="togglePlayerSelect('${p.name}')">
         <div class="pe-name">${p.name}</div>
         <div class="pe-stats">${p.games} peliä · ${p.wins} voittoa (${wr}%) · avg ${avg} p/tikka</div>
@@ -552,7 +550,7 @@ function renderPlayers(){
     const displayScore=p.finished?0:p.isLast?p.score:liveScore;
     const div=document.createElement('div');
     div.className='player'+(isCurrent?' current':'')+(p.bust?' busted':'')+(p.finished||p.isLast?' won':'');
-    div.innerHTML=`<div class="p-name">${p.emoji||'🎯'} ${p.name}${badge}</div><div class="p-main"><div class="${sc}">${p.bust?p.score:displayScore}</div><div class="dartrow">${dh}</div></div><div class="p-last">${lastH}</div>`;
+    div.innerHTML=`<div class="p-name">${p.name}${badge}</div><div class="p-main"><div class="${sc}">${p.bust?p.score:displayScore}</div><div class="dartrow">${dh}</div></div><div class="p-last">${lastH}</div>`;
     c.appendChild(div);
   });
 }
@@ -707,7 +705,7 @@ function updateWinBanner(){
   if(finishOrder.length===0){banner.style.display='none';return;}
   banner.style.display='block';
   const winnerEmoji=players.find(p=>p.name===finishOrder[0])?.emoji||'🎯';
-  document.getElementById('winTitle').textContent=`${winnerEmoji} ${finishOrder[0]} voitti!`;
+  document.getElementById('winTitle').textContent=`🏆 ${finishOrder[0]} voitti!`;
   const remaining=players.filter(p=>!p.finished&&!p.isLast);
   const lastPlayer=players.find(p=>p.isLast);
   const allPlaced=[...finishOrder,...(lastPlayer?[lastPlayer.name]:[])];
@@ -794,7 +792,7 @@ function renderDiary(){
           const medals=['🥇','🥈','🥉'];
           const medal=medals[r.place-1]||`${r.place}.`;
           const cls=r.place===1?'diary-player winner':'diary-player';
-          return `<span class="${cls}">${medal} ${r.emoji||'🎯'} ${r.name} <span style="color:var(--muted);font-weight:400">(${r.darts} tikkaa)</span></span>`;
+          return `<span class="${cls}">${medal} ${r.name} <span style="color:var(--muted);font-weight:400">(${r.darts} tikkaa)</span></span>`;
         }).join('')}
       </div>
     `;
@@ -839,7 +837,7 @@ function renderStats(){
     const avg=p.totalDarts>0?(p.totalScore/p.totalDarts).toFixed(1):'–';
     const dpg=p.games>0?Math.round(p.totalDarts/p.games):'–';
     const card=document.createElement('div');card.className='stats-card';
-    card.innerHTML=`<div class="stats-name">${p.emoji||'🎯'} ${p.name}</div><div class="stats-grid">
+    card.innerHTML=`<div class="stats-name">${p.name}</div><div class="stats-grid">
       <div class="stat-item"><div class="stat-label">Pelejä</div><div class="stat-val">${p.games}</div></div>
       <div class="stat-item"><div class="stat-label">Voittoja</div><div class="stat-val gold">${p.wins} <span style="font-size:.55em;color:var(--muted)">(${wr}%)</span></div></div>
       <div class="stat-item"><div class="stat-label">Pistettä/tikka</div><div class="stat-val green">${avg}</div></div>
