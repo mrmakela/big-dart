@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="fi">
 <head>
 <meta charset="UTF-8">
@@ -7,261 +6,157 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<!-- v3 -->
 <title>Darts 🎯</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Colours — dark grey background, light grey buttons, light green active */
   --bg:#2a2a2a;
   --surface:#333333;
   --surface2:#3d3d3d;
   --border:rgba(255,255,255,0.12);
-  --green:#7ecb8f;        /* light green — active state */
-  --green-dark:#3fa85a;   /* darker green for glow/shadow */
+  --green:#7ecb8f;
+  --green-dark:#3fa85a;
   --blue:#6ab4f5;
   --red:#e06060;
   --amber:#d4a840;
   --gold:#d4a840;
   --text:#f0f0f0;
-  --text-dark:#111;       /* text on green buttons */
+  --text-dark:#111;
   --muted:#999;
-  --btn:#555555;          /* inactive button background */
-  --btn-border:#666;      /* inactive button border */
+  --btn:#555555;
+  --btn-border:#666;
   --r:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background:#2a2a2a;background:var(--bg);color:#f0f0f0;color:var(--text);min-height:100vh;font-size:16px;}
-header{text-align:center;padding:.6em 1em .4em;font-family:'Bebas Neue',sans-serif;font-size:1.9em;color:#7ecb8f;color:var(--green);letter-spacing:.1em;}
-
-/* Wrap — always 12px margin from edges */
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16px;}
+header{text-align:center;padding:.6em 1em .4em;font-family:'Bebas Neue',sans-serif;font-size:1.9em;color:var(--green);letter-spacing:.1em;}
 .wrap{max-width:700px;margin:auto;padding:0 .8em 1em;}
-
-/* Fixed bottom */
 #gameScroll{padding-bottom:230px;}
-#throwBar{position:fixed;bottom:0;left:0;right:0;background:#333;background:var(–surface);border-top:2px solid rgba(255,255,255,0.12);border-top-color:var(–border);padding:.6em .8em env(safe-area-inset-bottom,.6em);z-index:100;}
+#throwBar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:2px solid var(--border);padding:.6em .8em env(safe-area-inset-bottom,.6em);z-index:100;}
 #throwBarInner{max-width:700px;margin:auto;}
-
-/* Cards */
-.card{background:#333;background:var(–surface);border:1px solid rgba(255,255,255,0.12);border-color:var(–border);border-radius:var(–r);padding:.7em .9em;margin-bottom:.6em;}
-.card-label{font-size:.65em;text-transform:uppercase;letter-spacing:.12em;color:#999;color:var(–muted);margin-bottom:.5em;}
-
-/* ── BUTTONS — gradient + shadow ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.7em .9em;margin-bottom:.6em;}
+.card-label{font-size:.65em;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.5em;}
 button{
-padding:.6em 1.1em;
-margin:.2em;
-border:1.5px solid #666;
-border-color:var(–btn-border);
-border-radius:9px;
-cursor:pointer;
-background:#555;
-background:linear-gradient(to bottom, #626262, #4a4a4a);
-color:#f0f0f0;
-color:var(–text);
-font-family:‘DM Sans’,sans-serif;
-font-size:1em;
-font-weight:600;
-transition:background .12s,border-color .12s,box-shadow .12s;
-line-height:1.3;
-min-height:44px;
--webkit-tap-highlight-color:transparent;
--webkit-appearance:none;
-appearance:none;
-box-shadow:0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+  padding:.6em 1.1em;margin:.2em;border:1.5px solid var(--btn-border);border-radius:9px;cursor:pointer;
+  background:linear-gradient(to bottom, #626262, #4a4a4a);color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:1em;font-weight:600;transition:background .12s,border-color .12s,box-shadow .12s;
+  line-height:1.3;min-height:44px;-webkit-tap-highlight-color:transparent;-webkit-appearance:none;appearance:none;
+  box-shadow:0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 button:hover{background:linear-gradient(to bottom,#6e6e6e,#565656);border-color:#888;box-shadow:0 3px 6px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.1);}
 button:active{opacity:.85;box-shadow:0 1px 2px rgba(0,0,0,0.4),inset 0 1px 3px rgba(0,0,0,0.2);}
-button.active{
-background:linear-gradient(to bottom,#8ed89f,#6ab87c);
-border-color:#7ecb8f;border-color:var(–green);
-color:#111;color:var(–text-dark);font-weight:700;
-box-shadow:0 2px 6px rgba(106,184,124,0.4),inset 0 1px 0 rgba(255,255,255,0.2);
-}
-button.co{
-background:linear-gradient(to bottom,#7cc0f8,#5aa8f0);
-border-color:#6ab4f5;border-color:var(–blue);
-color:#000;font-weight:700;font-size:.85em;
-box-shadow:0 2px 5px rgba(90,168,240,0.35),inset 0 1px 0 rgba(255,255,255,0.2);
-}
-button.danger-btn{
-background:linear-gradient(to bottom,#e87070,#d05050);
-border-color:#e06060;border-color:var(–red);color:#fff;
-box-shadow:0 2px 5px rgba(208,80,80,0.4),inset 0 1px 0 rgba(255,255,255,0.15);
-}
-button.ghost{background:transparent;border-color:transparent;color:#999;color:var(–muted);font-size:.85em;padding:.3em .5em;min-height:36px;box-shadow:none;}
-button.ghost:hover{color:#e06060;color:var(–red);border-color:#e06060;border-color:var(–red);background:transparent;box-shadow:none;}
+button.active{background:linear-gradient(to bottom,#8ed89f,#6ab87c);border-color:var(--green);color:var(--text-dark);font-weight:700;box-shadow:0 2px 6px rgba(106,184,124,0.4),inset 0 1px 0 rgba(255,255,255,0.2);}
+button.co{background:linear-gradient(to bottom,#7cc0f8,#5aa8f0);border-color:var(--blue);color:#000;font-weight:700;font-size:.85em;box-shadow:0 2px 5px rgba(90,168,240,0.35),inset 0 1px 0 rgba(255,255,255,0.2);}
+button.danger-btn{background:linear-gradient(to bottom,#e87070,#d05050);border-color:var(--red);color:#fff;box-shadow:0 2px 5px rgba(208,80,80,0.4),inset 0 1px 0 rgba(255,255,255,0.15);}
+button.ghost{background:transparent;border-color:transparent;color:var(--muted);font-size:.85em;padding:.3em .5em;min-height:36px;box-shadow:none;}
+button.ghost:hover{color:var(--red);border-color:var(--red);background:transparent;box-shadow:none;}
 button.mod{font-weight:800;font-size:1.1em;min-width:3.2em;padding:.5em .6em;min-height:48px;}
-button.mod.active{
-background:linear-gradient(to bottom,#e0b840,#c09828);
-border-color:#d4a840;border-color:var(–amber);color:#000;
-box-shadow:0 2px 5px rgba(192,152,40,0.4),inset 0 1px 0 rgba(255,255,255,0.2);
-}
+button.mod.active{background:linear-gradient(to bottom,#e0b840,#c09828);border-color:var(--amber);color:#000;box-shadow:0 2px 5px rgba(192,152,40,0.4),inset 0 1px 0 rgba(255,255,255,0.2);}
 button.tab{border-radius:7px;font-size:.88em;padding:.5em .9em;min-height:40px;}
-button.tab.active{
-background:linear-gradient(to bottom,#8ed89f,#6ab87c);
-border-color:#7ecb8f;border-color:var(–green);
-color:#111;color:var(–text-dark);
-box-shadow:0 2px 5px rgba(106,184,124,0.4),inset 0 1px 0 rgba(255,255,255,0.2);
-}
-
-/* Throw grid */
+button.tab.active{background:linear-gradient(to bottom,#8ed89f,#6ab87c);border-color:var(--green);color:var(--text-dark);box-shadow:0 2px 5px rgba(106,184,124,0.4),inset 0 1px 0 rgba(255,255,255,0.2);}
 .tgrid{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.6em;}
 .tgrid button{width:4em;height:4em;padding:0;font-size:1.1em;font-weight:700;border-radius:9px;margin:0;}
 .tgrid button.bull{border-color:#c06060;color:#f08080;}
 .mod-row{display:flex;gap:8px;align-items:center;}
-hr{border:none;border-top:1px solid var(–border);margin:.5em 0;}
-
-/* Players grid (game) */
+hr{border:none;border-top:1px solid var(--border);margin:.5em 0;}
 .players-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.5em;margin-bottom:.6em;}
-.player{background:var(–surface2);border:1.5px solid var(–border);border-radius:var(–r);padding:.5em .65em;transition:border-color .15s,box-shadow .15s,opacity .15s;}
-.player.current{border-color:var(–green);box-shadow:0 0 0 1px var(–green),0 2px 14px rgba(126,203,143,.15);}
-.player.busted{border-color:var(–red);}
-.player.won{border-color:var(–gold);opacity:.65;}
-.p-name{font-size:.9em;font-weight:700;color:var(–text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.15em;}
+.player{background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--r);padding:.5em .65em;transition:border-color .15s,box-shadow .15s,opacity .15s;}
+.player.current{border-color:var(--green);box-shadow:0 0 0 1px var(--green),0 2px 14px rgba(126,203,143,.15);}
+.player.busted{border-color:var(--red);}
+.player.won{border-color:var(--gold);opacity:.65;}
+.p-name{font-size:.9em;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.15em;}
 .p-main{display:flex;align-items:center;gap:.4em;}
-.p-score{font-family:‘Bebas Neue’,sans-serif;font-size:2em;line-height:1;color:var(–green);flex-shrink:0;min-width:1.8em;}
-.p-score.warn{color:var(–amber);}
-.p-score.bust-col{color:var(–red);}
-.p-score.won-col{color:var(–gold);}
-/* Dart slots — clearly visible against player card background */
+.p-score{font-family:'Bebas Neue',sans-serif;font-size:2em;line-height:1;color:var(--green);flex-shrink:0;min-width:1.8em;}
+.p-score.warn{color:var(--amber);}
+.p-score.bust-col{color:var(--red);}
+.p-score.won-col{color:var(--gold);}
 .dartrow{display:flex;gap:4px;flex:1;}
-.d{
-flex:1;height:1.8em;
-display:flex;align-items:center;justify-content:center;
-border-radius:5px;font-size:.72em;font-weight:700;
-background:#222;background:rgba(0,0,0,0.35);
-border:1.5px solid #888;
-color:#bbb;
-min-width:0;
-}
+.d{flex:1;height:1.8em;display:flex;align-items:center;justify-content:center;border-radius:5px;font-size:.72em;font-weight:700;background:rgba(0,0,0,0.35);border:1.5px solid #888;color:#bbb;min-width:0;}
 .d.empty{border-style:dashed;border-color:#555;opacity:.5;}
 .d.miss{color:#888;}
 .d.hit{color:#fff;}
 .d.bust-d{color:#f08080;border-color:#c06060;}
 .d.prev{color:#666;font-style:italic;border-color:#555;}
 .p-last{font-size:.72em;font-weight:700;margin-top:.18em;}
-
-/* Win banner */
-#winBanner{display:none;background:linear-gradient(135deg,#2a2a1a,#333320);border:2px solid #d4a840;border-color:var(–gold);border-radius:var(–r);padding:.9em 1em;margin-bottom:.6em;text-align:center;}
-#winBanner .win-title{font-family:‘Bebas Neue’,sans-serif;font-size:1.7em;color:#d4a840;color:var(–gold);letter-spacing:.1em;}
+#winBanner{display:none;background:linear-gradient(135deg,#2a2a1a,#333320);border:2px solid var(--gold);border-radius:var(--r);padding:.9em 1em;margin-bottom:.6em;text-align:center;}
+#winBanner .win-title{font-family:'Bebas Neue',sans-serif;font-size:1.7em;color:var(--gold);letter-spacing:.1em;}
 #winBanner .win-sub{font-size:.82em;color:#bbb;margin-top:.2em;}
-
-/* Setup player list — selected clearly brighter */
-.player-entry{
-display:flex;align-items:center;
-background:#3d3d3d;background:var(–surface2);
-border:2px solid #555;
-border-radius:9px;
-padding:.45em .5em .45em .7em;
-margin-bottom:.4em;cursor:pointer;
-transition:border-color .15s,background .15s;
-gap:.5em;min-height:52px;
-}
+.player-entry{display:flex;align-items:center;background:var(--surface2);border:2px solid #555;border-radius:9px;padding:.45em .5em .45em .7em;margin-bottom:.4em;cursor:pointer;transition:border-color .15s,background .15s;gap:.5em;min-height:52px;}
 .player-entry:hover{border-color:#888;background:#454545;}
-.player-entry.selected{
-border-color:#7ecb8f;border-color:var(–green);
-background:#2a4a30;  /* clearly distinct green-tinted background */
-box-shadow:0 0 0 1px #7ecb8f;box-shadow:0 0 0 1px var(–green);
-}
-.player-entry.selected .pe-name{color:#7ecb8f;color:var(–green);}
+.player-entry.selected{border-color:var(--green);background:#2a4a30;box-shadow:0 0 0 1px var(--green);}
+.player-entry.selected .pe-name{color:var(--green);}
 .pe-name{font-size:.93em;font-weight:600;color:#f0f0f0;}
-.pe-stats{font-size:.72em;color:#999;color:var(–muted);margin-top:.1em;}
+.pe-stats{font-size:.72em;color:var(--muted);margin-top:.1em;}
 .pe-right{display:flex;align-items:center;gap:4px;flex-shrink:0;margin-left:auto;}
-
-/* Stats — each player clearly boxed off */
-.stats-card{
-background:#333;background:var(–surface);
-border:2px solid #555;border-color:var(–border);
-border-radius:var(–r);
-padding:.9em 1em;
-margin-bottom:1em;           /* extra space between players */
-}
-.stats-name{font-size:1.1em;font-weight:700;margin-bottom:.6em;padding-bottom:.4em;border-bottom:1px solid #555;border-bottom-color:var(–border);}
+.stats-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--r);padding:.9em 1em;margin-bottom:1em;}
+.stats-name{font-size:1.1em;font-weight:700;margin-bottom:.6em;padding-bottom:.4em;border-bottom:1px solid var(--border);}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5em;}
-.stat-item{background:#3d3d3d;background:var(–surface2);border:1px solid #555;border-color:var(–border);border-radius:8px;padding:.45em .65em;}
-.stat-label{font-size:.65em;text-transform:uppercase;letter-spacing:.08em;color:#999;color:var(–muted);}
-.stat-val{font-family:‘Bebas Neue’,sans-serif;font-size:1.5em;color:#f0f0f0;color:var(–text);line-height:1.1;}
-.stat-val.green{color:#7ecb8f;color:var(–green);}
-.stat-val.gold{color:#d4a840;color:var(–gold);}
-
-/* Diary — each game entry clearly boxed */
-.diary-entry{
-background:#333;background:var(–surface);
-border:2px solid #555;border-color:var(–border);
-border-radius:var(–r);
-padding:.7em .9em;
-margin-bottom:.7em;
-}
-.diary-date{font-size:.7em;color:#999;color:var(–muted);margin-bottom:.4em;padding-bottom:.3em;border-bottom:1px solid #555;border-bottom-color:var(–border);}
+.stat-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.45em .65em;}
+.stat-label{font-size:.65em;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:1.5em;color:var(--text);line-height:1.1;}
+.stat-val.green{color:var(--green);}
+.stat-val.gold{color:var(--gold);}
+.diary-entry{background:var(--surface);border:2px solid var(--border);border-radius:var(--r);padding:.7em .9em;margin-bottom:.7em;}
+.diary-date{font-size:.7em;color:var(--muted);margin-bottom:.4em;padding-bottom:.3em;border-bottom:1px solid var(--border);}
 .diary-players{display:flex;flex-wrap:wrap;gap:.4em;}
-.diary-player{font-size:.85em;padding:.25em .65em;border-radius:20px;background:#3d3d3d;background:var(–surface2);border:1.5px solid #666;}
-.diary-player.winner{border-color:#d4a840;border-color:var(–gold);color:#d4a840;color:var(–gold);font-weight:700;background:#2a2a1a;}
-
-/* Input */
-input[type=text]{
-background:var(–surface2);border:1.5px solid var(–btn-border);
-border-radius:8px;color:var(–text);padding:.5em .8em;
-font-family:‘DM Sans’,sans-serif;font-size:.95em;outline:none;
-margin-right:.3em;width:145px;min-height:44px;
--webkit-appearance:none;
-appearance:none;
-}
-input[type=text]:focus{border-color:var(–green);}
+.diary-player{font-size:.85em;padding:.25em .65em;border-radius:20px;background:var(--surface2);border:1.5px solid #666;}
+.diary-player.winner{border-color:var(--gold);color:var(--gold);font-weight:700;background:#2a2a1a;}
+input[type=text]{background:var(--surface2);border:1.5px solid var(--btn-border);border-radius:8px;color:var(--text);padding:.5em .8em;font-family:'DM Sans',sans-serif;font-size:.95em;outline:none;margin-right:.3em;width:145px;min-height:44px;-webkit-appearance:none;appearance:none;}
+input[type=text]:focus{border-color:var(--green);}
 .co-row{display:flex;flex-wrap:wrap;gap:6px;}
 .nav-tabs{display:flex;gap:6px;margin-bottom:.8em;flex-wrap:wrap;}
-
-/* Practice */
-.drill-card{
-background:#333;background:var(–surface);
-border:2px solid #555;border-color:var(–border);
-border-radius:var(–r);
-padding:.85em 1em;
-margin-bottom:.7em;
-cursor:pointer;
-transition:border-color .15s,box-shadow .15s,background .15s;
-min-height:64px;
-box-shadow:0 2px 6px rgba(0,0,0,0.35);
-}
+.drill-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--r);padding:.85em 1em;margin-bottom:.7em;cursor:pointer;transition:border-color .15s,box-shadow .15s,background .15s;min-height:64px;box-shadow:0 2px 6px rgba(0,0,0,0.35);}
 .drill-card:hover{border-color:#888;background:#3a3a3a;box-shadow:0 4px 10px rgba(0,0,0,0.45);}
-.drill-card:active{opacity:.85;}
 .drill-card h3{font-size:1em;font-weight:700;margin-bottom:.3em;}
-.drill-card p{font-size:.78em;color:#999;color:var(–muted);}
+.drill-card p{font-size:.78em;color:var(--muted);}
 #practice-game{display:none;}
-.drill-target{text-align:center;background:var(–surface2);border:2px solid var(–green);border-radius:var(–r);padding:.9em;margin-bottom:.6em;}
-.drill-target .dt-label{font-size:.7em;text-transform:uppercase;letter-spacing:.1em;color:var(–muted);}
-.drill-target .dt-value{font-family:‘Bebas Neue’,sans-serif;font-size:4em;line-height:1;color:var(–green);}
-.drill-target .dt-sub{font-size:.82em;color:var(–muted);margin-top:.2em;}
+.drill-target{text-align:center;background:var(--surface2);border:2px solid var(--green);border-radius:var(--r);padding:.9em;margin-bottom:.6em;}
+.drill-target .dt-label{font-size:.7em;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);}
+.drill-target .dt-value{font-family:'Bebas Neue',sans-serif;font-size:4em;line-height:1;color:var(--green);}
+.drill-target .dt-sub{font-size:.82em;color:var(--muted);margin-top:.2em;}
 .drill-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5em;margin-bottom:.6em;}
-.ds-item{background:var(–surface2);border:1px solid var(–border);border-radius:9px;padding:.45em .5em;text-align:center;}
-.ds-label{font-size:.62em;text-transform:uppercase;letter-spacing:.08em;color:var(–muted);}
-.ds-val{font-family:‘Bebas Neue’,sans-serif;font-size:1.6em;line-height:1;color:var(–text);}
-.ds-val.green{color:var(–green);}
+.ds-item{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:.45em .5em;text-align:center;}
+.ds-label{font-size:.62em;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
+.ds-val{font-family:'Bebas Neue',sans-serif;font-size:1.6em;line-height:1;color:var(--text);}
+.ds-val.green{color:var(--green);}
 .drill-progress{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.6em;}
-.dp-seg{flex:1;min-width:1.5em;height:2em;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.67em;font-weight:700;background:var(–surface2);border:1px solid var(–border);color:var(–muted);}
-.dp-seg.hit{background:rgba(126,203,143,.2);border-color:var(–green);color:var(–green);}
-.dp-seg.current{border-color:var(–amber);color:var(–amber);}
-.dp-seg.done{background:rgba(126,203,143,.07);border-color:rgba(126,203,143,.25);color:var(–muted);}
-.countdown-score{font-family:‘Bebas Neue’,sans-serif;font-size:3.5em;text-align:center;color:var(–green);line-height:1;}
-.countdown-score.warn{color:var(–amber);}
+.dp-seg{flex:1;min-width:1.5em;height:2em;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:.67em;font-weight:700;background:var(--surface2);border:1px solid var(--border);color:var(--muted);}
+.dp-seg.hit{background:rgba(126,203,143,.2);border-color:var(--green);color:var(--green);}
+.dp-seg.current{border-color:var(--amber);color:var(--amber);}
+.dp-seg.done{background:rgba(126,203,143,.07);border-color:rgba(126,203,143,.25);color:var(--muted);}
+
+/* ── SHEETS SYNC UI ── */
+.sheets-setup{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:.75em .9em;margin-bottom:.6em;}
+.sheets-setup summary{font-size:.8em;color:var(--muted);cursor:pointer;user-select:none;list-style:none;}
+.sheets-setup summary::-webkit-details-marker{display:none;}
+.sheets-setup summary::before{content:'⚙ ';}
+.sheets-url-row{margin-top:.6em;display:flex;gap:.4em;align-items:center;}
+.sheets-url-row input{flex:1;width:auto;margin:0;font-size:.82em;}
+.sheets-url-row button{margin:0;min-height:36px;font-size:.82em;padding:.4em .8em;}
+.sync-status{font-size:.75em;margin-top:.4em;min-height:16px;font-family:'DM Sans',monospace;}
+.sync-status.ok{color:var(--green);}
+.sync-status.err{color:var(--red);}
+.sync-status.pending{color:var(--blue);}
+.gas-code-box{margin-top:.7em;background:#1e1e1e;border-radius:8px;padding:.7em .8em;font-size:.72em;font-family:monospace;color:#7ecb8f;white-space:pre;overflow-x:auto;line-height:1.55;border:1px solid #444;}
+.win-sync{margin-top:.6em;padding:.6em .8em;background:var(--surface2);border-radius:8px;border:1px solid var(--border);}
+.win-sync-title{font-size:.68em;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.3em;}
 
 @media(max-width:480px){
-body{font-size:15px;}
-.tgrid button{width:3.6em;height:3.6em;font-size:1em;}
-.p-score{font-size:1.7em;}
-.players-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));}
-.stats-grid{grid-template-columns:1fr 1fr;}
-.wrap{padding:0 .75em 1em;}
-#throwBar{padding:.5em .75em env(safe-area-inset-bottom,.5em);}
+  body{font-size:15px;}
+  .tgrid button{width:3.6em;height:3.6em;font-size:1em;}
+  .p-score{font-size:1.7em;}
+  .players-grid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));}
+  .stats-grid{grid-template-columns:1fr 1fr;}
+  .wrap{padding:0 .75em 1em;}
+  #throwBar{padding:.5em .75em env(safe-area-inset-bottom,.5em);}
 }
 </style>
-
 </head>
 <body>
 <header>🎯 Darts</header>
 <div class="wrap">
 
 <!-- ══ SETUP ══ -->
-
 <div id="setup">
   <div class="nav-tabs">
     <button class="tab active" id="tabSetup"    onclick="showTab('setup-content')">Peli</button>
@@ -271,7 +166,6 @@ body{font-size:15px;}
   </div>
 
   <!-- PELI TAB -->
-
   <div id="setup-content">
     <div class="card">
       <div class="card-label">Pisteluku</div>
@@ -290,33 +184,128 @@ body{font-size:15px;}
       </div>
       <div id="playerList" style="max-height:38vh;overflow-y:auto;"></div>
     </div>
+
+    <!-- SHEETS SETUP -->
+    <details class="sheets-setup" id="sheetsSetupDetails">
+      <summary>Google Sheets -synkronointi</summary>
+      <div style="font-size:.78em;color:var(--muted);margin-top:.5em;line-height:1.6;">
+        Tulokset tallentuvat automaattisesti Google Sheetsiin jokaisen pelin jälkeen.
+        Tarvitset Apps Script -webhookin — <span style="color:var(--green);cursor:pointer;" onclick="document.getElementById('gasInstructions').style.display=document.getElementById('gasInstructions').style.display==='none'?'block':'none'">näytä ohjeet ▾</span>
+      </div>
+      <div id="gasInstructions" style="display:none;margin-top:.6em;">
+        <ol style="font-size:.78em;color:var(--muted);line-height:2;padding-left:1.2em;">
+          <li>Avaa Google Sheets → <b style="color:var(--text);">Laajennukset → Apps Script</b></li>
+          <li>Korvaa kaikki koodi alla olevalla ja tallenna <b style="color:var(--text);">(Ctrl+S)</b></li>
+          <li>Klikkaa <b style="color:var(--text);">Ota käyttöön → Uusi käyttöönotto</b></li>
+          <li>Tyyppi: <b style="color:var(--text);">Verkkosovellus</b> · Suorita: <b style="color:var(--text);">Minä</b> · Käyttöoikeus: <b style="color:var(--text);">Kaikki, myös anonyymit</b></li>
+          <li>Kopioi <b style="color:var(--text);">Verkkosovelluksen URL</b> kenttään alta</li>
+        </ol>
+        <div class="gas-code-box" id="gasCodeBox">// ── Apps Script — Darts kaksisuuntainen synkronointi ──
+// Kopioi tämä koodi Google Apps Scriptiin ja ota käyttöön verkkosovelluksena.
+
+var SS = SpreadsheetApp.getActiveSpreadsheet();
+
+// ── doPost: vastaanottaa datan sovellukselta ──
+function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  var action = data.action || 'append';
+
+  if (action === 'append' && data.sheet && data.rows) {
+    var sh = SS.getSheetByName(data.sheet) || SS.insertSheet(data.sheet);
+    if (data.header && sh.getLastRow() === 0) sh.appendRow(data.header);
+    data.rows.forEach(function(row) { sh.appendRow(row); });
+  }
+
+  if (action === 'syncPlayers' && data.players) {
+    var sh = SS.getSheetByName('Pelaajat') || SS.insertSheet('Pelaajat');
+    sh.clearContents();
+    sh.appendRow(['nimi','emoji','pelejä','voittoja','pisteitä','tikkoja','kierroksia','busteja','tuplat','triplat','paras','paras_kierros_heitot','paras_kierros_pisteet','päivitetty']);
+    data.players.forEach(function(p) {
+      var br = p.bestRound;
+      sh.appendRow([p.name, p.emoji||'🎯', p.games||0, p.wins||0, p.totalScore||0,
+        p.totalDarts||0, p.totalRounds||0, p.busts||0, p.doubles||0, p.triples||0,
+        p.bestGame||'', br?br.throws.join('|'):'', br?br.score:'', new Date().toISOString()]);
+    });
+  }
+
+  if (action === 'syncDiary' && data.entries) {
+    var sh = SS.getSheetByName('Päiväkirja') || SS.insertSheet('Päiväkirja');
+    sh.clearContents();
+    sh.appendRow(['ts','mode','pelaajat_json']);
+    data.entries.forEach(function(e) {
+      sh.appendRow([e.ts, e.mode||'', JSON.stringify(e.results)]);
+    });
+  }
+
+  return ContentService.createTextOutput(JSON.stringify({ok:true}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+// ── doGet: palauttaa kaiken datan sovellukselle ──
+function doGet(e) {
+  var result = { ok: true, players: [], diary: [] };
+
+  var pSh = SS.getSheetByName('Pelaajat');
+  if (pSh && pSh.getLastRow() > 1) {
+    var rows = pSh.getRange(2, 1, pSh.getLastRow()-1, 14).getValues();
+    result.players = rows.map(function(r) {
+      var brThrows = r[11] ? String(r[11]).split('|') : null;
+      var brScore  = r[12] ? Number(r[12]) : null;
+      return {
+        name: r[0], emoji: r[1]||'🎯', games: Number(r[2])||0, wins: Number(r[3])||0,
+        totalScore: Number(r[4])||0, totalDarts: Number(r[5])||0,
+        totalRounds: Number(r[6])||0, busts: Number(r[7])||0,
+        doubles: Number(r[8])||0, triples: Number(r[9])||0,
+        bestGame: r[10]!==''?Number(r[10]):null,
+        bestRound: brThrows&&brScore?{throws:brThrows,score:brScore}:null
+      };
+    });
+  }
+
+  var dSh = SS.getSheetByName('Päiväkirja');
+  if (dSh && dSh.getLastRow() > 1) {
+    var dRows = dSh.getRange(2, 1, dSh.getLastRow()-1, 3).getValues();
+    result.diary = dRows.map(function(r) {
+      try { return {ts: Number(r[0]), mode: r[1], results: JSON.parse(r[2])}; }
+      catch(e) { return null; }
+    }).filter(Boolean);
+  }
+
+  return ContentService.createTextOutput(JSON.stringify(result))
+    .setMimeType(ContentService.MimeType.JSON);
+}</div>
+        <button onclick="copyGasCode()" style="margin-top:.4em;font-size:.78em;min-height:32px;padding:.3em .9em;">📋 Kopioi koodi</button>
+      
+            <div style="display:flex;gap:6px;margin-top:.8em;margin-bottom:.3em;">
+        <button onclick="pullFromSheets()" style="flex:1;font-size:.8em;min-height:34px;padding:.3em .6em;">⬇ Hae Sheetsistä</button>
+        <button onclick="pushToSheets()"  style="flex:1;font-size:.8em;min-height:34px;padding:.3em .6em;">⬆ Lähetä Sheetsiin</button>
+      </div>
+      <div class="sync-status" id="biSyncStatus" style="margin-bottom:.4em;min-height:14px;"></div>
+      <div class="sheets-url-row">
+        <input type="text" id="webhookUrl" placeholder="https://script.google.com/macros/s/.../exec" oninput="saveWebhookUrl()">
+        <button onclick="testWebhook()">Testaa</button>
+      </div>
+      <div class="sync-status" id="webhookStatus"></div>
+      <div id="lastSyncLabel" style="font-size:.7em;color:var(--muted);margin-top:.3em;"></div>
+      <div style="margin-top:.6em;font-size:.75em;color:var(--muted);">
+        Välilehdet: &nbsp;
+        <input type="text" id="shTilastot" value="Tilastot" style="width:80px;font-size:1em;min-height:28px;padding:.2em .5em;margin-right:.3em;" oninput="saveWebhookUrl()">
+        <input type="text" id="shPelit"    value="Pelit"    style="width:60px;font-size:1em;min-height:28px;padding:.2em .5em;margin-right:.3em;" oninput="saveWebhookUrl()">
+        <input type="text" id="shKierrokset" value="Kierrokset" style="width:90px;font-size:1em;min-height:28px;padding:.2em .5em;" oninput="saveWebhookUrl()">
+      </div>
+    </details>
+
     <button id="startGame" class="active" style="width:100%;padding:.6em;font-size:1em;position:sticky;bottom:.5em;">Aloita peli ▶</button>
   </div>
 
   <!-- HARJOITTELU TAB -->
-
   <div id="practice-content" style="display:none;">
     <div id="practice-menu">
-      <div class="drill-card" onclick="startDrill('clock')">
-        <h3>🕐 Kellonympäri</h3>
-        <p>Osu numeroihin 1–20 järjestyksessä, ja lopuksi häränsilmä. 21 kohdetta yhteensä.</p>
-      </div>
-      <div class="drill-card" onclick="startDrill('doubles')">
-        <h3>✌️ Tuplat</h3>
-        <p>Osu tupliin D1–D20 järjestyksessä. Vain kaksinkertaiset kelpaavat.</p>
-      </div>
-      <div class="drill-card" onclick="startDrill('triples')">
-        <h3>🔱 Triplat</h3>
-        <p>Osu triploihin T1–T20 järjestyksessä. Vain kolminkertaiset kelpaavat.</p>
-      </div>
-      <div class="drill-card" onclick="startDrill('checkout')">
-        <h3>💡 Checkout-harjoitus</h3>
-        <p>Satunnainen loppusumma annetaan — harjoittele finishin löytämistä. 10 haastetta.</p>
-      </div>
-      <div class="drill-card" onclick="startDrill('countdown')">
-        <h3>⏱ Countdown 501</h3>
-        <p>Yksinpeli 501:stä nollaan. Laske tikkoja — kuinka vähillä pääset maaliin?</p>
-      </div>
+      <div class="drill-card" onclick="startDrill('clock')"><h3>🕐 Kellonympäri</h3><p>Osu numeroihin 1–20 järjestyksessä, ja lopuksi häränsilmä.</p></div>
+      <div class="drill-card" onclick="startDrill('doubles')"><h3>✌️ Tuplat</h3><p>Osu tupliin D1–D20 järjestyksessä.</p></div>
+      <div class="drill-card" onclick="startDrill('triples')"><h3>🔱 Triplat</h3><p>Osu triploihin T1–T20 järjestyksessä.</p></div>
+      <div class="drill-card" onclick="startDrill('checkout')"><h3>💡 Checkout-harjoitus</h3><p>Satunnainen loppusumma — harjoittele finishin löytämistä.</p></div>
+      <div class="drill-card" onclick="startDrill('countdown')"><h3>⏱ Countdown 501</h3><p>Yksinpeli 501:stä nollaan.</p></div>
     </div>
     <div id="practice-game">
       <div class="drill-target">
@@ -340,13 +329,11 @@ body{font-size:15px;}
   </div>
 
   <!-- PÄIVÄKIRJA TAB -->
-
   <div id="diary-content" style="display:none;">
     <div id="diaryContainer"></div>
   </div>
 
   <!-- TILASTOT TAB -->
-
   <div id="stats-content" style="display:none;">
     <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:.6em;" id="statsSortBar">
       <button class="tab active" onclick="setStatsSort('name')">A–Z</button>
@@ -359,22 +346,29 @@ body{font-size:15px;}
     </div>
     <div id="statsContainer"></div>
     <div style="display:flex;gap:6px;margin-top:.4em;">
+      <button id="statsSyncBtn" onclick="manualSync()" style="flex:1;font-size:.82em;padding:.4em;">☁ Tallenna Sheetsiin</button>
       <button onclick="exportData()" style="flex:1;font-size:.82em;padding:.4em;">⬇ Vie tiedot</button>
       <label style="flex:1;">
         <button onclick="document.getElementById('importFile').click()" style="width:100%;font-size:.82em;padding:.4em;">⬆ Tuo tiedot</button>
         <input type="file" id="importFile" accept=".json" style="display:none;width:auto;" onchange="importData(event)">
       </label>
     </div>
+    <div class="sync-status" id="statsSyncStatus" style="margin-top:.5em;min-height:16px;"></div>
   </div>
 </div>
 
 <!-- ══ GAME ══ -->
-
 <div id="game" style="display:none;">
   <div id="gameScroll">
     <div id="winBanner">
       <div class="win-title" id="winTitle"></div>
       <div class="win-sub"   id="winSub"></div>
+      <!-- Sheets sync status shown here after game ends -->
+      <div class="win-sync" id="winSync" style="display:none;">
+        <div class="win-sync-title">Google Sheets</div>
+        <div class="sync-status" id="winSyncStatus"></div>
+        <button onclick="manualSync()" style="margin-top:.5em;font-size:.78em;padding:.3em .9em;min-height:32px;">↺ Tallenna uudelleen</button>
+      </div>
     </div>
     <div class="players-grid" id="playersContainer"></div>
     <div class="card" id="coCard" style="display:none;">
@@ -387,7 +381,6 @@ body{font-size:15px;}
 </div><!-- /wrap -->
 
 <!-- Fixed throw bar -->
-
 <div id="throwBar" style="display:none;">
   <div id="throwBarInner">
     <div id="throwControls">
@@ -400,7 +393,11 @@ body{font-size:15px;}
       </div>
       <hr style="margin-top:.5em;">
     </div>
-    <button id="endGame" class="danger-btn" style="width:100%;padding:.45em;font-size:.82em;">↩ Takaisin</button>
+    <div style="display:flex;gap:6px;">
+      <button id="endGame" class="danger-btn" style="flex:1;padding:.45em;font-size:.82em;">↩ Takaisin</button>
+      <button onclick="manualSync()" class="sheets-sync-btn" style="flex:0 0 auto;padding:.45em .8em;font-size:.82em;" title="Tallenna Sheetsiin nyt">☁ Sheets</button>
+    </div>
+    <div class="sync-status" id="throwBarSyncStatus" style="margin-top:.3em;text-align:center;min-height:14px;"></div>
   </div>
 </div>
 
@@ -410,6 +407,8 @@ body{font-size:15px;}
 // ══════════════════════════════════════════════════════
 const DB_KEY    = 'darts_players_v1';
 const DIARY_KEY = 'darts_diary_v1';
+const SHEETS_KEY = 'darts_sheets_cfg';
+const QUEUE_KEY  = 'darts_sync_queue';
 
 function dbLoad(){ try{ return JSON.parse(localStorage.getItem(DB_KEY))||[]; }catch(e){ return []; } }
 function dbSave(d){ localStorage.setItem(DB_KEY,JSON.stringify(d)); }
@@ -417,17 +416,15 @@ function dbSave(d){ localStorage.setItem(DB_KEY,JSON.stringify(d)); }
 function dbAddPlayer(name){
   const db=dbLoad();
   if(db.find(p=>p.name===name)) return;
-  db.push({name,emoji:'🎯',games:0,wins:0,totalScore:0,totalDarts:0,totalRounds:0,busts:0,doubles:0,triples:0,bestGame:null});
+  db.push({name,emoji:'🎯',games:0,wins:0,totalScore:0,totalDarts:0,totalRounds:0,busts:0,doubles:0,triples:0,bestGame:null,bestRound:null});
   dbSave(db);
 }
 function dbDeletePlayer(name){ dbSave(dbLoad().filter(p=>p.name!==name)); }
 function dbGetEmoji(name){ return dbLoad().find(p=>p.name===name)?.emoji||'🎯'; }
 function dbSetEmoji(name,emoji){
-  const db=dbLoad();
-  const p=db.find(x=>x.name===name);
+  const db=dbLoad(); const p=db.find(x=>x.name===name);
   if(p){ p.emoji=emoji; dbSave(db); }
 }
-
 function dbRecordGame(results){
   const db=dbLoad();
   results.forEach(r=>{
@@ -439,18 +436,326 @@ function dbRecordGame(results){
     p.doubles=(p.doubles||0)+(r.doubles||0);
     p.triples=(p.triples||0)+(r.triples||0);
     if(r.darts>0&&r.finished){ if(p.bestGame===null||r.darts<p.bestGame) p.bestGame=r.darts; }
+    if(r.bestRound&&(p.bestRound===null||r.bestRound.score>(p.bestRound?.score||0))) p.bestRound=r.bestRound;
   });
   dbSave(db);
 }
-
-// Diary: list of game records
 function diaryLoad(){ try{ return JSON.parse(localStorage.getItem(DIARY_KEY))||[]; }catch(e){ return []; } }
 function diarySave(d){ localStorage.setItem(DIARY_KEY,JSON.stringify(d)); }
-function diaryAdd(entry){
-  const d=diaryLoad();
-  d.unshift(entry); // newest first
-  if(d.length>200) d.splice(200); // cap
-  diarySave(d);
+function diaryAdd(entry){ const d=diaryLoad(); d.unshift(entry); if(d.length>200) d.splice(200); diarySave(d); }
+
+// ══════════════════════════════════════════════════════
+// GOOGLE SHEETS SYNC
+// ══════════════════════════════════════════════════════
+function loadSheetsCfg(){
+  try{ return JSON.parse(localStorage.getItem(SHEETS_KEY))||{}; }catch(e){ return {}; }
+}
+function saveWebhookUrl(){
+  const cfg={
+    url: document.getElementById('webhookUrl').value.trim(),
+    sh1: document.getElementById('shTilastot').value.trim()||'Tilastot',
+    sh2: document.getElementById('shPelit').value.trim()||'Pelit',
+    sh3: document.getElementById('shKierrokset').value.trim()||'Kierrokset',
+  };
+  localStorage.setItem(SHEETS_KEY, JSON.stringify(cfg));
+}
+function loadSheetsCfgToUI(){
+  const cfg=loadSheetsCfg();
+  if(cfg.url) document.getElementById('webhookUrl').value=cfg.url;
+  if(cfg.sh1) document.getElementById('shTilastot').value=cfg.sh1;
+  if(cfg.sh2) document.getElementById('shPelit').value=cfg.sh2;
+  if(cfg.sh3) document.getElementById('shKierrokset').value=cfg.sh3;
+  if(cfg.url) document.getElementById('sheetsSetupDetails').open=false;
+}
+
+function copyGasCode(){
+  const txt=document.getElementById('gasCodeBox').textContent;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btns=[...document.querySelectorAll('button')].find(b=>b.textContent.includes('Kopioi koodi'));
+    if(btns){btns.textContent='Kopioitu!'; setTimeout(()=>btns.textContent='Kopioi koodi',2000);}
+  });
+}
+
+async function testWebhook(){
+  const url=document.getElementById('webhookUrl').value.trim();
+  const st=document.getElementById('webhookStatus');
+  if(!url){st.textContent='Syötä URL ensin.';st.className='sync-status err';return;}
+  if(!url.startsWith('https://script.google.com')){st.textContent='URL ei näytä oikealta.';st.className='sync-status err';return;}
+  st.textContent='⟳ Testataan...'; st.className='sync-status pending';
+  try{
+    await fetch(url,{method:'GET',mode:'no-cors'});
+    st.textContent='✓ Webhook tavoitettu! Valmis synkronointiin.';
+    st.className='sync-status ok';
+  }catch(e){
+    st.textContent='✗ Virhe: '+e.message;
+    st.className='sync-status err';
+  }
+}
+
+async function postSheet(sheetName, header, rows){
+  const cfg=loadSheetsCfg();
+  if(!cfg.url) return;
+  await fetch(cfg.url,{
+    method:'POST',
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({sheet:sheetName, header, rows})
+  });
+}
+
+async function autoSyncQueue(){
+  const cfg=loadSheetsCfg();
+  if(!cfg.url) return;
+  const q=queueLoad();
+  if(q.length===0) return;
+
+  const el=document.getElementById('winSync');
+  const allStatus=[
+    document.getElementById('throwBarSyncStatus'),
+    document.getElementById('winSyncStatus'),
+    document.getElementById('statsSyncStatus'),
+  ].filter(Boolean);
+  function setStatus(msg,cls){ allStatus.forEach(el=>{el.textContent=msg;el.className='sync-status '+cls;}); }
+
+  if(el) el.style.display='block';
+  setStatus('⧗ Yhdistetään…','pending');
+  await new Promise(r=>setTimeout(r,250));
+  setStatus(`↻ Synkronoidaan ${q.length} peliä…`,'pending');
+
+  const STAT_HDR=['Päivämäärä','Aika','PeliID','Pelaaja','Tulos','Sija','Tikkoja','Pisteet','Busteja','Tuplat','Triplat','Avg/kierros','ParasKierros','Lähtöpisteet','Pelimuoto'];
+  const GAME_HDR=['Päivämäärä','Aika','PeliID','Voittaja','Pelaajat','VoittajanTikkoja','Lähtöpisteet','Pelimuoto','Pelaajamäärä'];
+  const ROUN_HDR=['PeliID','Pelaaja','Kierros','T1','T2','T3','Pisteet','Status','Päivämäärä'];
+
+  // Collect all rows from all queued games
+  const allStat=[], allGame=[], allRound=[];
+  q.forEach(entry=>{
+    const {statRows,gameRow,roundRows}=buildSheetRows(entry);
+    allStat.push(...statRows); allGame.push(...gameRow); allRound.push(...roundRows);
+  });
+
+  try{
+    await postSheet(cfg.sh1||'Tilastot', STAT_HDR, allStat);
+    await postSheet(cfg.sh2||'Pelit',    GAME_HDR, allGame);
+    if(allRound.length) await postSheet(cfg.sh3||'Kierrokset', ROUN_HDR, allRound);
+
+    // Clear queue on success
+    queueSave([]);
+    updateQueueBadge();
+loadLastSync();
+autoStartSync();
+    setStatus(`✓ Valmis! ${q.length} peliä tallennettu → ${cfg.sh1||'Tilastot'}, ${cfg.sh2||'Pelit'}, ${cfg.sh3||'Kierrokset'}`,'ok');
+  }catch(e){
+    setStatus(`✗ Virhe: ${e.message} — ${q.length} peliä jonossa, yritä uudelleen.`,'err');
+  }
+}
+
+
+
+// ══════════════════════════════════════════════════════
+// KAKSISUUNTAINEN SYNKRONOINTI
+// ══════════════════════════════════════════════════════
+const LAST_SYNC_KEY = 'darts_last_sync';
+
+function setLastSync(){
+  const ts = new Date().toLocaleString('fi-FI');
+  localStorage.setItem(LAST_SYNC_KEY, ts);
+  const el = document.getElementById('lastSyncLabel');
+  if(el) el.textContent = 'Viimeksi synkronoitu: ' + ts;
+}
+function loadLastSync(){
+  const ts = localStorage.getItem(LAST_SYNC_KEY);
+  const el = document.getElementById('lastSyncLabel');
+  if(el && ts) el.textContent = 'Viimeksi synkronoitu: ' + ts;
+}
+
+// Yhdistä kaksi pelaajalistaa — laskee tilastot yhteen, säilyttää molempien pelit
+function mergePlayers(local, remote){
+  const merged = [...local];
+  remote.forEach(rp => {
+    const lp = merged.find(p => p.name === rp.name);
+    if(!lp){
+      merged.push(rp); // uusi pelaaja remoteissa
+    } else {
+      // Yhdistellään tilastot — ei ylikirjoiteta, lisätään erot
+      // Käytetään remote:a pohjaksi jos sillä on enemmän pelejä
+      const base   = lp.games >= rp.games ? lp : rp;
+      const other  = lp.games >= rp.games ? rp : lp;
+      // Lasketaan delta: kuinka monta peliä toisella on enemmän
+      const delta = other.games - base.games;
+      if(delta > 0){
+        // Lisätään vain uudet pelit päälle
+        lp.games       = base.games + delta;
+        lp.wins        = base.wins + Math.max(0, other.wins - (other.games - delta));
+        lp.totalScore  = base.totalScore  + Math.max(0, other.totalScore  - 0);
+        lp.totalDarts  = base.totalDarts  + Math.max(0, other.totalDarts  - 0);
+        lp.totalRounds = (base.totalRounds||0) + Math.max(0,(other.totalRounds||0));
+        lp.busts       = base.busts + Math.max(0, other.busts - 0);
+        lp.doubles     = (base.doubles||0) + Math.max(0,(other.doubles||0));
+        lp.triples     = (base.triples||0) + Math.max(0,(other.triples||0));
+      } else {
+        // Remote ei ole uudempi — käytä localia mutta päivitä parhaat tulokset
+      }
+      // Paras peli
+      if(rp.bestGame !== null){
+        lp.bestGame = lp.bestGame === null ? rp.bestGame : Math.min(lp.bestGame, rp.bestGame);
+      }
+      // Paras kierros
+      if(rp.bestRound && (!lp.bestRound || rp.bestRound.score > lp.bestRound.score)){
+        lp.bestRound = rp.bestRound;
+      }
+      // Emoji: säilytä local jos asetettu, muuten remote
+      if(!lp.emoji || lp.emoji === '🎯') lp.emoji = rp.emoji || '🎯';
+    }
+  });
+  return merged;
+}
+
+// Yhdistä päiväkirjaentryit — duplikaatit poistetaan timestampin perusteella
+function mergeDiary(local, remote){
+  const map = new Map();
+  [...local, ...remote].forEach(e => {
+    if(!map.has(e.ts)) map.set(e.ts, e);
+  });
+  return [...map.values()].sort((a,b) => b.ts - a.ts).slice(0, 200);
+}
+
+// ── HAKU SHEETSISTÄ (pull) ──
+async function pullFromSheets(){
+  const cfg = loadSheetsCfg();
+  const st  = document.getElementById('biSyncStatus');
+  if(!cfg.url){ st.textContent = '⚠ Aseta webhook URL ensin.'; st.className='sync-status err'; return; }
+
+  st.textContent = '⊗ Yhdistetään…'; st.className = 'sync-status pending';
+  await new Promise(r => setTimeout(r, 200));
+  st.textContent = '↻ Haetaan tietoja Sheetsistä…'; st.className = 'sync-status pending';
+
+  try {
+    const r = await fetch(cfg.url + '?action=read', {method:'GET', mode:'cors'});
+    if(!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+
+    if(!data.ok) throw new Error(data.error || 'Tuntematon virhe');
+
+    // Yhdistä pelaajat
+    if(data.players && data.players.length > 0){
+      const local  = dbLoad();
+      const merged = mergePlayers(local, data.players);
+      dbSave(merged);
+      // Lisää puuttuvat pelaajat setupPlayers-listaan tietoisuutta varten
+    }
+
+    // Yhdistä päiväkirja
+    if(data.diary && data.diary.length > 0){
+      const localDiary  = diaryLoad();
+      const mergedDiary = mergeDiary(localDiary, data.diary);
+      diarySave(mergedDiary);
+    }
+
+    setLastSync();
+    renderPlayerList();
+    // Jos jonossa pelejä, lähetä ne myös
+    const q=queueLoad(); if(q.length>0) autoSyncQueue();
+    const np = data.players ? data.players.length : 0;
+    const nd = data.diary   ? data.diary.length   : 0;
+    st.textContent = `✓ Valmis! ${np} pelaajaa, ${nd} päiväkirjaentryä synkronoitu.`;
+    st.className = 'sync-status ok';
+  } catch(e) {
+    st.textContent = '✗ Virhe: ' + e.message;
+    st.className = 'sync-status err';
+  }
+}
+
+// ── LÄHETYS SHEETSIIN (push pelaajat + päiväkirja) ──
+async function pushToSheets(){
+  const cfg = loadSheetsCfg();
+  const st  = document.getElementById('biSyncStatus');
+  if(!cfg.url){ st.textContent = '⚠ Aseta webhook URL ensin.'; st.className='sync-status err'; return; }
+
+  st.textContent = '⊗ Yhdistetään…'; st.className = 'sync-status pending';
+  await new Promise(r => setTimeout(r, 200));
+  st.textContent = '↻ Lähetetään tietoja Sheetsiin…'; st.className = 'sync-status pending';
+
+  try {
+    // Lähetä pelaajat
+    await fetch(cfg.url, {
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'syncPlayers', players: dbLoad()})
+    });
+    // Lähetä päiväkirja
+    await fetch(cfg.url, {
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({action:'syncDiary', entries: diaryLoad()})
+    });
+    // Lähetä myös jono jos on
+    const q = queueLoad();
+    if(q.length > 0) await autoSyncQueue();
+
+    setLastSync();
+    st.textContent = '✓ Valmis! Pelaajat ja päiväkirja lähetetty.';
+    st.className = 'sync-status ok';
+  } catch(e) {
+    st.textContent = '✗ Virhe: ' + e.message;
+    st.className = 'sync-status err';
+  }
+}
+
+// Automaattinen pull käynnistyksen yhteydessä jos URL on asetettu
+async function autoStartSync(){
+  const cfg = loadSheetsCfg();
+  if(!cfg.url) return;
+  // Haetaan hiljaa taustalla
+  try {
+    const r = await fetch(cfg.url + '?action=read', {method:'GET', mode:'cors'});
+    if(!r.ok) return;
+    const data = await r.json();
+    if(!data.ok) return;
+    if(data.players && data.players.length > 0){
+      const merged = mergePlayers(dbLoad(), data.players);
+      dbSave(merged);
+    }
+    if(data.diary && data.diary.length > 0){
+      diarySave(mergeDiary(diaryLoad(), data.diary));
+    }
+    setLastSync();
+    renderPlayerList();
+  } catch(e) { /* offline — ei haittaa */ }
+}
+
+// ══════════════════════════════════════════════════════
+// SYNC QUEUE — offline puskuri
+// ══════════════════════════════════════════════════════
+function queueLoad(){ try{ return JSON.parse(localStorage.getItem(QUEUE_KEY))||[]; }catch(e){ return []; } }
+function queueSave(q){ localStorage.setItem(QUEUE_KEY,JSON.stringify(q)); }
+
+// Lisää yhden pelin jonoon
+function queueAdd(entry){
+  const q=queueLoad();
+  q.push(entry);
+  queueSave(q);
+  updateQueueBadge();
+}
+
+// Päivitä badge kaikissa Sheets-napeissa
+function updateQueueBadge(){
+  const n=queueLoad().length;
+  const label=n>0 ? `☁ Sheets (${n} jonossa)` : '☁ Sheets';
+  document.querySelectorAll('.sheets-sync-btn').forEach(b=>b.textContent=label);
+  // Tilastot-välilehden nappi
+  const sb=document.getElementById('statsSyncBtn');
+  if(sb) sb.textContent=n>0?`☁ Tallenna Sheetsiin (${n} jonossa)`:'☁ Tallenna Sheetsiin';
+}
+
+// Rakenna Sheets-rivit yhdestä queue-entrysta
+function buildSheetRows(entry){
+  const {results,rounds,winner,date,time,gameId,startScore,inM,outM}=entry;
+  const statRows=results.map(r=>{
+    const myRounds=rounds.filter(rd=>rd.player===r.name&&!rd.bust);
+    const avg=myRounds.length?Math.round(myRounds.reduce((s,rd)=>s+rd.score,0)/myRounds.length):0;
+    const best=myRounds.length?Math.max(...myRounds.map(rd=>rd.score)):0;
+    return [date,time,gameId,r.name,r.place===1?'Voitto':'Häviö',r.place,r.darts,r.scored,r.busts,r.doubles||0,r.triples||0,avg,best,startScore,inM+' In / '+outM+' Out'];
+  });
+  const gameRow=[[date,time,gameId,winner,results.map(r=>r.name).join(', '),results.find(r=>r.place===1)?.darts||'',startScore,inM+' In / '+outM+' Out',results.length]];
+  const roundRows=rounds.map((rd,i)=>[gameId,rd.player,rd.roundNum||i+1,rd.throws[0]||'',rd.throws[1]||'',rd.throws[2]||'',rd.score,rd.bust?'Bust':'OK',date]);
+  return {statRows,gameRow,roundRows};
 }
 
 // ══════════════════════════════════════════════════════
@@ -461,32 +766,7 @@ let startingScore=301,inMode='Single',outMode='Single';
 let doubleActive=false,tripleActive=false;
 let history=[],finishOrder=[],pendingTimeout=null,statsSaved=false;
 let gameStats={};
-
-// ══════════════════════════════════════════════════════
-// EMOJI PICKER
-// ══════════════════════════════════════════════════════
-const EMOJIS=['🎯','🔥','⭐','💪','🦁','🐉','🦊','🐺','🦅','🌟','💎','🏆','🎱','🍀','❄️','⚡','🎭','🚀','👑','🌈'];
-let emojiPickerTarget=null;
-
-function showEmojiPicker(name,el){
-  // Close if already open for same player
-  const existing=document.getElementById('emoji-picker-popup');
-  if(existing){ existing.remove(); if(emojiPickerTarget===name){ emojiPickerTarget=null; return; } }
-  emojiPickerTarget=name;
-  const current=dbGetEmoji(name);
-  const picker=document.createElement('div');
-  picker.id='emoji-picker-popup';
-  picker.className='emoji-picker';
-  EMOJIS.forEach(e=>{
-    const span=document.createElement('span');
-    span.textContent=e;
-    if(e===current) span.className='selected';
-    span.onclick=(ev)=>{ ev.stopPropagation(); dbSetEmoji(name,e); picker.remove(); emojiPickerTarget=null; renderPlayerList(); };
-    picker.appendChild(span);
-  });
-  el.closest('.player-entry').insertAdjacentElement('afterend',picker);
-}
-document.addEventListener('click',()=>{ const p=document.getElementById('emoji-picker-popup'); if(p){p.remove();emojiPickerTarget=null;} });
+let roundsLog=[];   // kierroskohtainen kirjanpito Sheetsiä varten
 
 // ══════════════════════════════════════════════════════
 // TABS
@@ -575,13 +855,15 @@ document.getElementById('startGame').onclick=()=>{
     finished:false,place:0,isLast:false,
   }));
   gameStats={};
-  order.forEach(name=>{gameStats[name]={scored:0,darts:0,busts:0,rounds:0,doubles:0,triples:0};});
+  order.forEach(name=>{gameStats[name]={scored:0,darts:0,busts:0,rounds:0,doubles:0,triples:0,bestRound:null,roundNum:0};});
+  roundsLog=[];
   currentPlayerIndex=0; history=[]; finishOrder=[]; statsSaved=false;
   doubleActive=false; tripleActive=false;
   if(pendingTimeout){clearTimeout(pendingTimeout);pendingTimeout=null;}
   document.getElementById('setup').style.display='none';
   document.getElementById('game').style.display='block';
   document.getElementById('winBanner').style.display='none';
+  document.getElementById('winSync').style.display='none';
   document.getElementById('throwBar').style.display='block';
   document.getElementById('throwControls').style.display='block';
   renderThrowButtons(); updateToggleUI(); updateUI();
@@ -596,8 +878,8 @@ function renderPlayers(){
     const isCurrent=i===currentPlayerIndex&&!p.finished&&!p.isLast;
     const liveScore=p.finished?0:(p.score-p.roundScore);
     let sc='p-score';
-    if(p.finished||p.isLast) sc+=' won-col';
-    else if(p.bust)          sc+=' bust-col';
+    if(p.finished||p.isLast)      sc+=' won-col';
+    else if(p.bust)                sc+=' bust-col';
     else if(liveScore<=40&&liveScore>0) sc+=' warn';
     const showPrev=!p.bust&&!p.finished&&!p.isLast&&p.throws.length===0&&p.lastThrows.length>0;
     const src=showPrev?p.lastThrows:p.throws;
@@ -647,6 +929,7 @@ document.getElementById('undo').onclick=()=>{
   p.place=snap.prevPlace; p.isLast=snap.prevIsLast;
   finishOrder=snap.prevFinishOrder;
   gameStats=JSON.parse(snap.prevGameStats);
+  roundsLog=snap.prevRoundsLog?JSON.parse(snap.prevRoundsLog):roundsLog;
   doubleActive=false; tripleActive=false; updateToggleUI();
   const sp=players.filter(p=>!p.finished&&!p.isLast).length;
   document.getElementById('throwControls').style.display=sp>0?'block':'none';
@@ -671,6 +954,7 @@ function makeThrow(value){
     prevLastThrows:[...player.lastThrows],prevLastDelta:player.lastDelta,prevWasBust:player.wasBust,
     prevFinished:player.finished,prevPlace:player.place,prevIsLast:player.isLast,
     prevFinishOrder:[...finishOrder],prevGameStats:JSON.stringify(gameStats),
+    prevRoundsLog:JSON.stringify(roundsLog),
   });
 
   if(!player.hasStarted){
@@ -703,7 +987,15 @@ function makeThrow(value){
   if(remaining===0){
     player.score=0; player.finished=true;
     finishOrder.push(player.name); player.place=finishOrder.length;
-    if(gameStats[player.name]) gameStats[player.name].rounds++;
+    const gs=gameStats[player.name];
+    if(gs){
+      gs.rounds++; gs.roundNum=(gs.roundNum||0)+1;
+      if(player.roundScore>0){
+        if(gs.bestRound===null||player.roundScore>gs.bestRound.score)
+          gs.bestRound={throws:[...player.throws],score:player.roundScore};
+      }
+      roundsLog.push({player:player.name,throws:[...player.throws],score:player.roundScore,bust:false,roundNum:gs.roundNum});
+    }
     const stillPlaying=players.filter(p=>!p.finished);
     updateUI(); updateWinBanner();
     if(stillPlaying.length<=1){
@@ -721,9 +1013,17 @@ function makeThrow(value){
 }
 
 function advance(player,wasBust){
+  const gs=gameStats[player.name];
   player.lastThrows=[...player.throws]; player.lastDelta=wasBust?0:player.roundScore;
   player.wasBust=wasBust;
-  if(gameStats[player.name]) gameStats[player.name].rounds++;
+  if(gs){
+    gs.rounds++; gs.roundNum=(gs.roundNum||0)+1;
+    if(!wasBust&&player.roundScore>0&&player.throws.length===3){
+      if(gs.bestRound===null||player.roundScore>gs.bestRound.score)
+        gs.bestRound={throws:[...player.throws],score:player.roundScore};
+    }
+    roundsLog.push({player:player.name,throws:[...player.throws],score:player.roundScore,bust:wasBust,roundNum:gs.roundNum});
+  }
   player.throws=[];player.roundScore=0;player.bust=false;
   advanceToNextActive();
 }
@@ -734,7 +1034,7 @@ function advanceToNextActive(){
 }
 
 // ══════════════════════════════════════════════════════
-// SAVE STATS + DIARY
+// SAVE STATS + DIARY + SHEETS
 // ══════════════════════════════════════════════════════
 function saveGameStats(){
   if(statsSaved) return; statsSaved=true;
@@ -743,22 +1043,26 @@ function saveGameStats(){
     scored:gameStats[p.name]?.scored||0, darts:gameStats[p.name]?.darts||0,
     busts:gameStats[p.name]?.busts||0,   rounds:gameStats[p.name]?.rounds||0,
     doubles:gameStats[p.name]?.doubles||0, triples:gameStats[p.name]?.triples||0,
+    bestRound:gameStats[p.name]?.bestRound||null,
     finished:p.finished,
   }));
   dbRecordGame(results);
-
-  // Save to diary
   diaryAdd({
-    ts: Date.now(),
-    mode: `${startingScore} · ${inMode} In / ${outMode} Out`,
-    results: results.map(r=>({
-      name:r.name,
-      emoji:players.find(p=>p.name===r.name)?.emoji||'🎯',
-      place:r.place,
-      darts:r.darts,
-      finished:r.finished,
-    })),
+    ts:Date.now(),
+    mode:`${startingScore} · ${inMode} In / ${outMode} Out`,
+    results:results.map(r=>({name:r.name,emoji:players.find(p=>p.name===r.name)?.emoji||'🎯',place:r.place,darts:r.darts,finished:r.finished})),
   });
+
+  // Voittaja + queue-entry
+  const winner=finishOrder[0]||players[0].name;
+  const date=new Date().toLocaleDateString('fi-FI');
+  const time=new Date().toLocaleTimeString('fi-FI');
+  const gameId='G'+Date.now();
+  queueAdd({results,rounds:roundsLog,winner,date,time,gameId,startScore:startingScore,inM:inMode,outM:outMode});
+
+  // Yritä synkronoida heti jos verkko auki
+  const cfg=loadSheetsCfg();
+  if(cfg.url) autoSyncQueue();
 }
 
 // ══════════════════════════════════════════════════════
@@ -768,7 +1072,6 @@ function updateWinBanner(){
   const banner=document.getElementById('winBanner');
   if(finishOrder.length===0){banner.style.display='none';return;}
   banner.style.display='block';
-  const winnerEmoji=players.find(p=>p.name===finishOrder[0])?.emoji||'🎯';
   document.getElementById('winTitle').textContent=`🏆 ${finishOrder[0]} voitti!`;
   const remaining=players.filter(p=>!p.finished&&!p.isLast);
   const lastPlayer=players.find(p=>p.isLast);
@@ -777,7 +1080,6 @@ function updateWinBanner(){
     ?(allPlaced.length>1?'Sijoitukset: '+allPlaced.join(' › '):'Peli päättyi!')
     :`Peli jatkuu — ${remaining.length} pelaajaa jäljellä`;
 }
-
 function updateUI(){ renderPlayers(); renderCheckout(); }
 
 // ══════════════════════════════════════════════════════
@@ -803,7 +1105,6 @@ const FINISH_2={2:'D1',4:'D2',6:'D3',8:'D4',10:'D5',12:'D6',14:'D7',16:'D8',18:'
 const FINISH_3={2:'D1',3:'1 D1',4:'D2',5:'1 D2',6:'D3',7:'3 D2',8:'D4',9:'1 D4',10:'D5',11:'3 D4',12:'D6',13:'5 D4',14:'D7',15:'7 D4',16:'D8',17:'1 D8',18:'D9',19:'3 D8',20:'D10',21:'5 D8',22:'D11',23:'7 D8',24:'D12',25:'1 D12',26:'D13',27:'3 D12',28:'D14',29:'5 D12',30:'D15',31:'7 D12',32:'D16',33:'1 D16',34:'D17',35:'3 D16',36:'D18',37:'5 D16',38:'D19',39:'7 D16',40:'D20',41:'9 D16',42:'10 D16',43:'11 D16',44:'12 D16',45:'13 D16',46:'10 D18',47:'15 D16',48:'16 D16',49:'9 D20',50:'Bull',51:'11 D20',52:'12 D20',53:'13 D20',54:'14 D20',55:'15 D20',56:'16 D20',57:'17 D20',58:'18 D20',59:'19 D20',60:'20 D20',61:'T15 D8',62:'T10 D16',63:'T13 D12',64:'T16 D8',65:'T15 D10',66:'T10 D18',67:'T17 D8',68:'T20 D4',69:'T19 D6',70:'T18 D8',71:'T13 D16',72:'T16 D12',73:'T19 D8',74:'T14 D16',75:'T15 D15',76:'T20 D8',77:'T19 D10',78:'T18 D12',79:'T13 D20',80:'T20 D10',81:'T19 D12',82:'T14 D20',83:'T17 D16',84:'T20 D12',85:'T15 D20',86:'T18 D16',87:'T17 D18',88:'T20 D14',89:'T19 D16',90:'T18 D18',91:'T17 D20',92:'T20 D16',93:'T19 D18',94:'T18 D20',95:'T19 D19',96:'T20 D18',97:'T19 D20',98:'T20 D19',99:'T19 10 D16',100:'T20 D20',101:'T17 10 D20',102:'T20 10 D16',103:'T19 6 D20',104:'T18 18 D16',105:'T20 5 D20',106:'T20 6 D20',107:'T19 10 D20',108:'T20 8 D20',109:'T20 9 D20',110:'T20 10 D20',111:'T20 11 D20',112:'T20 12 D20',113:'T20 13 D20',114:'T20 14 D20',115:'T20 15 D20',116:'T20 16 D20',117:'T20 17 D20',118:'T20 18 D20',119:'T19 T12 D13',120:'T20 20 D20',121:'T20 T11 D14',122:'T18 T18 D7',123:'T19 T16 D9',124:'T20 T16 D8',125:'T20 T15 D10',126:'T19 T19 D6',127:'T20 T17 D8',128:'T20 T16 D10',129:'T19 T16 D12',130:'T20 T18 D8',131:'T20 T13 D16',132:'T20 T16 D12',133:'T20 T19 D8',134:'T20 T14 D16',135:'T20 T15 D15',136:'T20 T20 D8',137:'T20 T19 D10',138:'T20 T18 D12',139:'T20 T13 D20',140:'T20 T20 D10',141:'T20 T19 D12',142:'T20 T14 D20',143:'T20 T17 D16',144:'T20 T20 D12',145:'T20 T15 D20',146:'T20 T18 D16',147:'T20 T17 D18',148:'T20 T20 D14',149:'T20 T19 D16',150:'T20 T18 D18',151:'T20 T17 D20',152:'T20 T20 D16',153:'T20 T19 D18',154:'T20 T18 D20',155:'T20 T19 D19',156:'T20 T20 D18',157:'T20 T19 D20',158:'T20 T20 D19',160:'T20 T20 D20',161:'T20 T17 Bull',164:'T20 T18 Bull',167:'T20 T19 Bull',170:'T20 T20 Bull'};
 
 function isDoubleOutFinish(s){ if(!s) return false; const last=s.split(' ').pop(); return last==='Bull'||last.startsWith('D'); }
-
 function renderCheckout(){
   const div=document.getElementById('checkoutSuggestions'),card=document.getElementById('coCard');
   div.innerHTML='';
@@ -825,14 +1126,9 @@ function renderCheckout(){
 // DIARY
 // ══════════════════════════════════════════════════════
 function renderDiary(){
-  const div=document.getElementById('diaryContainer');
-  div.innerHTML='';
+  const div=document.getElementById('diaryContainer'); div.innerHTML='';
   const entries=diaryLoad();
-  if(entries.length===0){
-    div.innerHTML='<div style="color:var(--muted);font-size:.9em;padding:.5em 0;">Ei pelejä vielä. Pelaa ensimmäinen peli!</div>';
-    return;
-  }
-  // Group by date
+  if(entries.length===0){div.innerHTML='<div style="color:var(--muted);font-size:.9em;padding:.5em 0;">Ei pelejä vielä. Pelaa ensimmäinen peli!</div>';return;}
   let lastDate='';
   entries.forEach(entry=>{
     const dt=new Date(entry.ts);
@@ -841,32 +1137,19 @@ function renderDiary(){
     if(dateStr!==lastDate){
       const dh=document.createElement('div');
       dh.style.cssText='font-size:.7em;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:.8em 0 .3em;font-weight:700;';
-      dh.textContent=dateStr;
-      div.appendChild(dh);
-      lastDate=dateStr;
+      dh.textContent=dateStr; div.appendChild(dh); lastDate=dateStr;
     }
     const sorted=[...entry.results].sort((a,b)=>a.place-b.place);
-    const winner=sorted[0];
-    const e=document.createElement('div');
-    e.className='diary-entry';
-    e.innerHTML=`
-      <div class="diary-date">${timeStr} · ${entry.mode||''}</div>
-      <div class="diary-players">
-        ${sorted.map(r=>{
-          const medals=['🥇','🥈','🥉'];
-          const medal=medals[r.place-1]||`${r.place}.`;
-          const cls=r.place===1?'diary-player winner':'diary-player';
-          return `<span class="${cls}">${medal} ${r.name} <span style="color:var(--muted);font-weight:400">(${r.darts} tikkaa)</span></span>`;
-        }).join('')}
-      </div>
-    `;
+    const e=document.createElement('div'); e.className='diary-entry';
+    e.innerHTML=`<div class="diary-date">${timeStr} · ${entry.mode||''}</div>
+      <div class="diary-players">${sorted.map(r=>{
+        const medals=['🥇','🥈','🥉'];const medal=medals[r.place-1]||`${r.place}.`;
+        return `<span class="${r.place===1?'diary-player winner':'diary-player'}">${medal} ${r.name} <span style="color:var(--muted);font-weight:400">(${r.darts} tikkaa)</span></span>`;
+      }).join('')}</div>`;
     div.appendChild(e);
   });
-
-  // Clear diary button
   const clr=document.createElement('button');
-  clr.className='danger-btn';
-  clr.style.cssText='width:100%;margin-top:.8em;font-size:.82em;padding:.45em;';
+  clr.className='danger-btn'; clr.style.cssText='width:100%;margin-top:.8em;font-size:.82em;padding:.45em;';
   clr.textContent='🗑 Tyhjennä päiväkirja';
   clr.onclick=()=>{ if(!confirm('Tyhjennä koko päiväkirja? Tilastoja ei poisteta.')) return; diarySave([]); renderDiary(); };
   div.appendChild(clr);
@@ -900,7 +1183,20 @@ function renderStats(){
     const wr=p.games>0?Math.round(p.wins/p.games*100):0;
     const avg=p.totalDarts>0?(p.totalScore/p.totalDarts).toFixed(1):'–';
     const dpg=p.games>0?Math.round(p.totalDarts/p.games):'–';
-    const card=document.createElement('div');card.className='stats-card';
+    const br=p.bestRound;
+    const brHTML=br
+      ?`<div style="margin-top:.5em;padding:.5em .65em;background:var(--surface2);border-radius:8px;border:1px solid var(--border);">
+          <div class="stat-label" style="margin-bottom:.4em;">Paras heittokierros</div>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            ${br.throws.map(t=>`<span style="background:#222;border:1.5px solid #888;border-radius:6px;padding:.2em .6em;font-weight:700;font-size:.95em;color:#fff;">${t}</span>`).join('')}
+            <span style="margin-left:auto;font-family:'Bebas Neue',sans-serif;font-size:1.6em;color:var(--green);">${br.score}</span>
+          </div>
+        </div>`
+      :`<div style="margin-top:.5em;padding:.5em .65em;background:var(--surface2);border-radius:8px;border:1px solid var(--border);">
+          <div class="stat-label">Paras heittokierros</div>
+          <div style="color:var(--muted);font-size:.85em;margin-top:.2em;">–</div>
+        </div>`;
+    const card=document.createElement('div'); card.className='stats-card';
     card.innerHTML=`<div class="stats-name">${p.name}</div><div class="stats-grid">
       <div class="stat-item"><div class="stat-label">Pelejä</div><div class="stat-val">${p.games}</div></div>
       <div class="stat-item"><div class="stat-label">Voittoja</div><div class="stat-val gold">${p.wins} <span style="font-size:.55em;color:var(--muted)">(${wr}%)</span></div></div>
@@ -910,7 +1206,7 @@ function renderStats(){
       <div class="stat-item"><div class="stat-label">Tuplat</div><div class="stat-val" style="color:var(--blue)">${p.doubles||0}</div></div>
       <div class="stat-item"><div class="stat-label">Triplat</div><div class="stat-val" style="color:var(--amber)">${p.triples||0}</div></div>
       <div class="stat-item"><div class="stat-label">Paras peli</div><div class="stat-val gold">${p.bestGame!==null?p.bestGame+' tikkaa':'–'}</div></div>
-    </div>`;
+    </div>${brHTML}`;
     div.appendChild(card);
   });
 }
@@ -960,66 +1256,29 @@ function importData(event){
 // PRACTICE ENGINE
 // ══════════════════════════════════════════════════════
 let drill=null;
-
-// Checkout challenge scores (all valid double-out finishes 2–170)
 const CHECKOUT_CHALLENGES=[170,167,164,161,160,158,157,156,155,154,150,145,140,136,130,121,110,100,96,90,85,81,76,72,70,67,64,62,58,56,52,50,48,45,40,38,36,32,28,26,24,22,20,18,16,14,12,10,8,6,4,2];
-
 const DRILLS={
-  clock:{
-    name:'Kellonympäri',
-    targets:[
-      ...Array.from({length:20},(_,i)=>({label:`${i+1}`,sub:'Osuma mihin tahansa sektoriin'})),
-      {label:'Bull',sub:'Häränsilmä — viimeinen kohde!'},
-    ],
-  },
-  doubles:{
-    name:'Tuplat',
-    targets:Array.from({length:20},(_,i)=>({label:`D${i+1}`,sub:`Tupla ${i+1}`})),
-  },
-  triples:{
-    name:'Triplat',
-    targets:Array.from({length:20},(_,i)=>({label:`T${i+1}`,sub:`Tripla ${i+1}`})),
-  },
-  checkout:{
-    name:'Checkout-harjoitus',
-    targets:null, // generated on start
-  },
-  countdown:{
-    name:'Countdown 501',
-    targets:null, // special mode
-  },
+  clock:{name:'Kellonympäri',targets:[...Array.from({length:20},(_,i)=>({label:`${i+1}`,sub:'Osuma mihin tahansa sektoriin'})),{label:'Bull',sub:'Häränsilmä — viimeinen kohde!'}]},
+  doubles:{name:'Tuplat',targets:Array.from({length:20},(_,i)=>({label:`D${i+1}`,sub:`Tupla ${i+1}`}))},
+  triples:{name:'Triplat',targets:Array.from({length:20},(_,i)=>({label:`T${i+1}`,sub:`Tripla ${i+1}`}))},
+  checkout:{name:'Checkout-harjoitus',targets:null},
+  countdown:{name:'Countdown 501',targets:null},
 };
-
 function startDrill(type){
-  const def=DRILLS[type];
-  if(!def) return;
-
+  const def=DRILLS[type]; if(!def) return;
   if(type==='checkout'){
-    // Pick 10 random checkout values
-    const pool=[...CHECKOUT_CHALLENGES];
-    const picked=[];
-    for(let i=0;i<10&&pool.length>0;i++){
-      const idx=Math.floor(Math.random()*pool.length);
-      picked.push(pool.splice(idx,1)[0]);
-    }
-    def.targets=picked.map(v=>({
-      label:`${v}`,
-      sub:FINISH_3[v]||FINISH_2[v]||'Löydä checkout',
-      value:v,
-    }));
+    const pool=[...CHECKOUT_CHALLENGES],picked=[];
+    for(let i=0;i<10&&pool.length>0;i++){const idx=Math.floor(Math.random()*pool.length);picked.push(pool.splice(idx,1)[0]);}
+    def.targets=picked.map(v=>({label:`${v}`,sub:FINISH_3[v]||FINISH_2[v]||'Löydä checkout',value:v}));
   }
-
   if(type==='countdown'){
-    drill={type,def,step:0,hits:0,throws:0,segResults:{},missesOnCurrent:0,
-      countdown:{score:501,roundDarts:0}};
+    drill={type,def,step:0,hits:0,throws:0,segResults:{},missesOnCurrent:0,countdown:{score:501,roundDarts:0}};
     showCountdownUI();
     document.getElementById('practice-menu').style.display='none';
     document.getElementById('practice-game').style.display='block';
     document.getElementById('drill-result').style.display='none';
-    renderCountdown();
-    return;
+    renderCountdown(); return;
   }
-
   drill={type,def,step:0,hits:0,throws:0,segResults:{},missesOnCurrent:0};
   document.getElementById('practice-menu').style.display='none';
   document.getElementById('practice-game').style.display='block';
@@ -1027,186 +1286,97 @@ function startDrill(type){
   document.getElementById('drill-action-row').style.display='flex';
   renderDrill();
 }
-
-// ── Countdown mode ──
 function showCountdownUI(){
   document.getElementById('drill-action-row').style.display='none';
-  document.getElementById('drill-progress').innerHTML='';
-  // Render number buttons inline in the drill panel
-  const prog=document.getElementById('drill-progress');
-  prog.innerHTML='<div id="countdown-ui"></div>';
+  document.getElementById('drill-progress').innerHTML='<div id="countdown-ui"></div>';
 }
-
 function renderCountdown(){
-  const {countdown}=drill;
-  const sc=countdown.score;
+  const {countdown}=drill;const sc=countdown.score;
   const pct=Math.round((1-sc/501)*100);
   document.getElementById('drill-label').textContent='Countdown 501';
   document.getElementById('drill-target-val').textContent=sc;
   document.getElementById('drill-target-val').className='dt-value'+(sc<=40?' warn':'');
-  document.getElementById('drill-target-sub').textContent=`Tikka ${drill.throws+1}/kierros`;
-  document.getElementById('drill-hits').textContent='–';
   document.getElementById('drill-throws').textContent=drill.throws;
+  document.getElementById('drill-hits').textContent='–';
   document.getElementById('drill-pct').textContent=pct+'%';
-
-  // Show checkout suggestion if applicable
   const co=FINISH_3[sc]||FINISH_2[sc]||FINISH_1[sc]||null;
-  const coSub=co?`Checkout: ${co}`:(sc<=170&&sc>=2?'Etsi checkout':'');
-  if(coSub) document.getElementById('drill-target-sub').textContent=coSub;
-
-  // Number pad in progress area
-  const prog=document.getElementById('drill-progress');
-  prog.innerHTML='';
+  document.getElementById('drill-target-sub').textContent=co?`Checkout: ${co}`:(sc<=170&&sc>=2?'Etsi checkout':'');
+  const prog=document.getElementById('drill-progress');prog.innerHTML='';
   const wrap=document.createElement('div');
-
-  // D/T toggles + number grid
   let cdDouble=false,cdTriple=false;
   function buildPad(){
     wrap.innerHTML='';
-    const modRow=document.createElement('div');
-    modRow.style.cssText='display:flex;gap:6px;margin-bottom:.5em;';
-    const dBtn=document.createElement('button');
-    dBtn.textContent='D'; dBtn.className='mod'+(cdDouble?' active':'');
-    dBtn.onclick=()=>{cdDouble=!cdDouble;cdTriple=false;buildPad();};
-    const tBtn=document.createElement('button');
-    tBtn.textContent='T'; tBtn.className='mod'+(cdTriple?' active':'');
-    tBtn.onclick=()=>{cdTriple=!cdTriple;cdDouble=false;buildPad();};
-    modRow.append(dBtn,tBtn);
-    wrap.appendChild(modRow);
-
-    const grid=document.createElement('div');
-    grid.className='tgrid';
-    for(let i=0;i<=20;i++){
-      const b=document.createElement('button');
-      b.textContent=i;
-      b.onclick=()=>countdownThrow(i,cdDouble,cdTriple);
-      grid.appendChild(b);
-    }
-    const bull=document.createElement('button');
-    bull.textContent='25'; bull.className='bull';
-    bull.onclick=()=>countdownThrow(25,cdDouble,false);
-    grid.appendChild(bull);
+    const modRow=document.createElement('div');modRow.style.cssText='display:flex;gap:6px;margin-bottom:.5em;';
+    const dBtn=document.createElement('button');dBtn.textContent='D';dBtn.className='mod'+(cdDouble?' active':'');dBtn.onclick=()=>{cdDouble=!cdDouble;cdTriple=false;buildPad();};
+    const tBtn=document.createElement('button');tBtn.textContent='T';tBtn.className='mod'+(cdTriple?' active':'');tBtn.onclick=()=>{cdTriple=!cdTriple;cdDouble=false;buildPad();};
+    modRow.append(dBtn,tBtn);wrap.appendChild(modRow);
+    const grid=document.createElement('div');grid.className='tgrid';
+    for(let i=0;i<=20;i++){const b=document.createElement('button');b.textContent=i;b.onclick=()=>countdownThrow(i,cdDouble,cdTriple);grid.appendChild(b);}
+    const bull=document.createElement('button');bull.textContent='25';bull.className='bull';bull.onclick=()=>countdownThrow(25,cdDouble,false);grid.appendChild(bull);
     wrap.appendChild(grid);
-
-    const backRow=document.createElement('div');
-    backRow.style.cssText='display:flex;gap:6px;margin-top:.4em;';
-    const backBtn=document.createElement('button');
-    backBtn.className='danger-btn'; backBtn.textContent='↩ Takaisin';
-    backBtn.style.flex='1';
-    backBtn.onclick=endDrill;
-    backRow.appendChild(backBtn);
-    wrap.appendChild(backRow);
+    const backRow=document.createElement('div');backRow.style.cssText='display:flex;gap:6px;margin-top:.4em;';
+    const backBtn=document.createElement('button');backBtn.className='danger-btn';backBtn.textContent='↩ Takaisin';backBtn.style.flex='1';backBtn.onclick=endDrill;
+    backRow.appendChild(backBtn);wrap.appendChild(backRow);
   }
-  buildPad();
-  prog.appendChild(wrap);
+  buildPad();prog.appendChild(wrap);
 }
-
 function countdownThrow(value,isDouble,isTriple){
-  const cd=drill.countdown;
-  if(cd.score<=0) return;
+  const cd=drill.countdown;if(cd.score<=0) return;
   const isBull=value===25&&isDouble;
   const actual=isBull?50:value*(isTriple?3:isDouble?2:1);
-  const remaining=cd.score-actual;
-  drill.throws++;
-  cd.roundDarts++;
-
-  if(remaining<0||(remaining===1)){
-    // bust — round resets
-    cd.roundDarts=0;
-    renderCountdown();
-    return;
-  }
-  if(remaining===0){
-    cd.score=0;
-    renderCountdown();
-    showCountdownResult();
-    return;
-  }
-  cd.score=remaining;
-  if(cd.roundDarts>=3) cd.roundDarts=0;
-  renderCountdown();
+  const remaining=cd.score-actual;drill.throws++;cd.roundDarts++;
+  if(remaining<0||remaining===1){cd.roundDarts=0;renderCountdown();return;}
+  if(remaining===0){cd.score=0;renderCountdown();showCountdownResult();return;}
+  cd.score=remaining;if(cd.roundDarts>=3) cd.roundDarts=0;renderCountdown();
 }
-
 function showCountdownResult(){
   document.getElementById('drill-progress').innerHTML='';
   document.getElementById('drill-action-row').style.display='none';
-  const pct=Math.round((1-0/501)*100);
   const grade=drill.throws<=15?'🏆 Mestari!':drill.throws<=21?'⭐ Erinomainen!':drill.throws<=30?'👍 Hyvä!':'💪 Harjoittele lisää!';
-  const res=document.getElementById('drill-result');
-  res.style.display='block';
+  const res=document.getElementById('drill-result');res.style.display='block';
   res.innerHTML=`<div class="card" style="text-align:center;">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4em;color:var(--gold);margin-bottom:.3em;">${grade}</div>
     <div style="font-size:.9em;">501 → 0 · <strong>${drill.throws} tikkaa</strong> · ${Math.ceil(drill.throws/3)} kierrosta</div>
     <div style="margin-top:.6em;display:flex;gap:6px;justify-content:center;">
       <button onclick="startDrill('countdown')" class="active" style="padding:.5em 1.2em;">Uudelleen</button>
       <button onclick="endDrill()">↩ Takaisin</button>
-    </div>
-  </div>`;
+    </div></div>`;
 }
-
-// ── Standard drill ──
 function renderDrill(){
   if(!drill||drill.type==='countdown') return;
   const {def,step,hits,throws,segResults,missesOnCurrent}=drill;
-  const isDone=step>=def.targets.length;
-  const target=isDone?null:def.targets[step];
-
+  const isDone=step>=def.targets.length;const target=isDone?null:def.targets[step];
   document.getElementById('drill-label').textContent=isDone?'Valmis!':def.name;
   document.getElementById('drill-target-val').textContent=isDone?'🏁':target.label;
   document.getElementById('drill-target-sub').textContent=isDone?'':missesOnCurrent>0?`Yrityksiä: ${missesOnCurrent+1} — Jatka!`:target.sub;
   document.getElementById('drill-hits').textContent=hits;
   document.getElementById('drill-throws').textContent=throws;
   document.getElementById('drill-pct').textContent=throws>0?Math.round(hits/throws*100)+'%':'–';
-
-  const prog=document.getElementById('drill-progress');
-  prog.innerHTML='';
+  const prog=document.getElementById('drill-progress');prog.innerHTML='';
   def.targets.forEach((t,i)=>{
-    const seg=document.createElement('div');
-    seg.className='dp-seg';
-    seg.textContent=t.label;
+    const seg=document.createElement('div');seg.className='dp-seg';seg.textContent=t.label;
     if(segResults[i]==='hit') seg.classList.add('hit');
     else if(i===step&&!isDone) seg.classList.add('current');
     else if(i<step) seg.classList.add('done');
     prog.appendChild(seg);
   });
-
-  document.querySelectorAll('#drill-action-row button').forEach(b=>{
-    if(b.textContent.includes('Osuma')||b.textContent.includes('Ohi')) b.style.display=isDone?'none':'';
-  });
-
+  document.querySelectorAll('#drill-action-row button').forEach(b=>{if(b.textContent.includes('Osuma')||b.textContent.includes('Ohi')) b.style.display=isDone?'none':'';});
   if(isDone) showDrillResult();
 }
-
-function drillHit(){
-  if(!drill||drill.step>=drill.def.targets.length) return;
-  drill.throws++; drill.hits++;
-  drill.segResults[drill.step]='hit';
-  drill.step++; drill.missesOnCurrent=0;
-  renderDrill();
-}
-function drillMiss(){
-  if(!drill||drill.step>=drill.def.targets.length) return;
-  drill.throws++;
-  drill.missesOnCurrent=(drill.missesOnCurrent||0)+1;
-  renderDrill();
-}
-
+function drillHit(){ if(!drill||drill.step>=drill.def.targets.length) return; drill.throws++;drill.hits++;drill.segResults[drill.step]='hit';drill.step++;drill.missesOnCurrent=0;renderDrill(); }
+function drillMiss(){ if(!drill||drill.step>=drill.def.targets.length) return; drill.throws++;drill.missesOnCurrent=(drill.missesOnCurrent||0)+1;renderDrill(); }
 function showDrillResult(){
-  const {hits,throws,def,type}=drill;
-  const pct=throws>0?Math.round(hits/throws*100):0;
+  const {hits,throws,def,type}=drill;const pct=throws>0?Math.round(hits/throws*100):0;
   const grade=pct>=90?'🏆 Erinomainen!':pct>=70?'⭐ Hyvä!':pct>=50?'👍 Harjoittele lisää':'💪 Jatka harjoittelua!';
-  const res=document.getElementById('drill-result');
-  res.style.display='block';
+  const res=document.getElementById('drill-result');res.style.display='block';
   res.innerHTML=`<div class="card" style="text-align:center;">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4em;color:var(--gold);margin-bottom:.3em;">${grade}</div>
     <div style="font-size:.9em;">Kohteet: <strong>${def.targets.length}/${def.targets.length}</strong> &nbsp;·&nbsp; Tikkoja: <strong>${throws}</strong> &nbsp;·&nbsp; Tarkkuus: <strong>${pct}%</strong></div>
     <div style="margin-top:.6em;display:flex;gap:6px;justify-content:center;">
       <button onclick="startDrill('${type}')" class="active" style="padding:.5em 1.2em;">Uudelleen</button>
       <button onclick="endDrill()">↩ Takaisin</button>
-    </div>
-  </div>`;
+    </div></div>`;
 }
-
 function endDrill(){
   drill=null;
   document.getElementById('practice-menu').style.display='block';
@@ -1216,11 +1386,44 @@ function endDrill(){
   document.getElementById('drill-progress').innerHTML='';
 }
 
+
+// ══════════════════════════════════════════════════════
+// MANUAL SYNC
+// ══════════════════════════════════════════════════════
+async function manualSync(){
+  const cfg=loadSheetsCfg();
+  const allStatus=[
+    document.getElementById('throwBarSyncStatus'),
+    document.getElementById('winSyncStatus'),
+    document.getElementById('statsSyncStatus'),
+  ].filter(Boolean);
+  function setStatus(msg,cls){ allStatus.forEach(el=>{el.textContent=msg;el.className='sync-status '+cls;}); }
+
+  if(!cfg.url){
+    setStatus('⚠ Ei webhook URL’ia — aseta Sheets-asetuksista.','err');
+    const det=document.getElementById('sheetsSetupDetails');
+    if(det) det.open=true;
+    return;
+  }
+
+  const q=queueLoad();
+  if(q.length===0){
+    setStatus('✓ Ei synkronoitavaa — kaikki pelit jo lähetetty.','ok');
+    return;
+  }
+
+  const ws=document.getElementById('winSync');
+  if(ws) ws.style.display='block';
+
+  await autoSyncQueue();
+}
+
 // ══════════════════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════════════════
 renderPlayerList();
+loadSheetsCfgToUI();
+updateQueueBadge();
 </script>
-
 </body>
 </html>
