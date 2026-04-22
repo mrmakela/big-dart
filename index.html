@@ -31,8 +31,8 @@
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:16px;}
 header{text-align:center;padding:.6em 1em .4em;font-family:'Bebas Neue',sans-serif;font-size:1.9em;color:var(--green);letter-spacing:.1em;}
 .wrap{max-width:700px;margin:auto;padding:0 .8em 1em;}
-#gameScroll{padding-bottom:230px;}
-#throwBar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:2px solid var(--border);padding:.6em .8em env(safe-area-inset-bottom,.6em);z-index:100;}
+#gameScroll{padding-bottom:290px;}
+#throwBar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:2px solid var(--border);padding:.7em .8em env(safe-area-inset-bottom,1em);z-index:100;}
 #throwBarInner{max-width:700px;margin:auto;}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:.7em .9em;margin-bottom:.6em;}
 .card-label{font-size:.65em;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:.5em;}
@@ -130,17 +130,17 @@ input[type=text]:focus{border-color:var(--green);}
   position:fixed;bottom:0;left:0;right:0;
   background:var(--surface2);
   border-top:1px solid var(--border);
-  padding:.35em .9em env(safe-area-inset-bottom,.35em);
+  padding:.4em .9em env(safe-area-inset-bottom,.5em);
   display:flex;align-items:center;gap:.6em;
   font-size:.75em;font-family:'DM Sans',sans-serif;
-  z-index:150;
+  z-index:90;
   transform:translateY(100%);
   transition:transform .25s ease;
   max-width:700px;margin:0 auto;
-  /* when throwBar is visible, sit above it */
 }
 #syncToast.show{transform:translateY(0);}
-body.has-throwbar #syncToast{bottom:var(--throwbar-h, 160px);}
+/* Hide fixed toast when throwBar is visible — status shown inside throwBar instead */
+body.has-throwbar #syncToast{display:none;}
 .toast-icon{font-size:1em;flex-shrink:0;}
 .toast-text{flex:1;color:var(--muted);}
 .toast-text.ok{color:var(--green);}
@@ -486,7 +486,7 @@ function doGet(e) {
       <button id="endGame" class="danger-btn" style="flex:1;padding:.45em;font-size:.82em;">↩ Takaisin</button>
       <button onclick="manualSync()" class="sheets-sync-btn" style="flex:0 0 auto;padding:.45em .8em;font-size:.82em;" title="Tallenna Sheetsiin nyt">☁ Sheets</button>
     </div>
-    <div class="sync-status" id="throwBarSyncStatus" style="margin-top:.3em;text-align:center;min-height:14px;"></div>
+    <div id="gameStatusBar" style="min-height:1.6em;margin-top:.5em;padding:.2em 0 .3em;font-size:.75em;display:flex;align-items:center;gap:.5em;"></div>
   </div>
 </div>
 
@@ -599,7 +599,7 @@ async function autoSyncQueue(){
 
   function setStatus(msg,cls){
     showToast(msg, cls, false);
-    ['throwBarSyncStatus','statsSyncStatus','biSyncStatus'].forEach(id=>{
+    ['statsSyncStatus','biSyncStatus'].forEach(id=>{
       const e=document.getElementById(id);
       if(e){e.textContent=msg;e.className='sync-status '+cls;}
     });
@@ -641,6 +641,17 @@ async function autoSyncQueue(){
 let toastTimer = null;
 
 function showToast(msg, cls, autohide=true){
+  // Update in-game status bar if visible
+  const gsb = document.getElementById('gameStatusBar');
+  if(gsb){
+    const icon = cls==='ok'?'✓': cls==='err'?'✗': '☁';
+    gsb.innerHTML = `<span style="color:${cls==='ok'?'var(--green)':cls==='err'?'var(--red)':'var(--blue)'}">${icon}</span><span style="color:${cls==='ok'?'var(--green)':cls==='err'?'var(--red)':'var(--muted)'}">${msg}</span>`;
+    if(autohide && cls==='ok'){
+      if(toastTimer){ clearTimeout(toastTimer); toastTimer=null; }
+      toastTimer = setTimeout(()=>{ if(gsb) gsb.innerHTML=''; }, 5000);
+    }
+  }
+  // Fixed toast for setup/stats screens (hidden when throwBar visible)
   const toast = document.getElementById('syncToast');
   const icon  = document.getElementById('toastIcon');
   const text  = document.getElementById('toastText');
@@ -650,7 +661,7 @@ function showToast(msg, cls, autohide=true){
   toast.classList.add('show');
   if(toastTimer){ clearTimeout(toastTimer); toastTimer=null; }
   if(autohide && cls==='ok'){
-    toastTimer = setTimeout(hideToast, 4000);
+    toastTimer = setTimeout(hideToast, 5000);
   }
 }
 
@@ -700,7 +711,7 @@ function setModalStatus(msg, cls){
   const el = document.getElementById('syncModalStatus');
   if(el){ el.textContent = msg; el.className = 'sync-status ' + cls; }
   // Update small status elements
-  ['throwBarSyncStatus','statsSyncStatus','biSyncStatus'].forEach(id=>{
+  ['statsSyncStatus','biSyncStatus'].forEach(id=>{
     const e = document.getElementById(id);
     if(e){ e.textContent = msg; e.className = 'sync-status ' + cls; }
   });
@@ -1136,9 +1147,9 @@ document.getElementById('startGame').onclick=()=>{
   document.getElementById('setup').style.display='none';
   document.getElementById('game').style.display='block';
   document.getElementById('winBanner').style.display='none';
-  document.getElementById('winSync').style.display='none';
   document.getElementById('throwBar').style.display='block';
   document.body.classList.add('has-throwbar');
+  const _gsb=document.getElementById('gameStatusBar'); if(_gsb) _gsb.innerHTML='';
   document.getElementById('throwControls').style.display='block';
   renderThrowButtons(); updateToggleUI(); updateUI();
 };
@@ -1669,7 +1680,7 @@ async function manualSync(){
   const cfg=loadSheetsCfg();
   function setStatus(msg,cls){
     showToast(msg, cls, false);
-    ['throwBarSyncStatus','statsSyncStatus','biSyncStatus'].forEach(id=>{
+    ['statsSyncStatus','biSyncStatus'].forEach(id=>{
       const e=document.getElementById(id);
       if(e){e.textContent=msg;e.className='sync-status '+cls;}
     });
