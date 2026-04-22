@@ -125,6 +125,62 @@ input[type=text]:focus{border-color:var(--green);}
 .dp-seg.current{border-color:var(--amber);color:var(--amber);}
 .dp-seg.done{background:rgba(126,203,143,.07);border-color:rgba(126,203,143,.25);color:var(--muted);}
 
+/* ── SYNC TOAST BAR ── */
+#syncToast{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--surface2);
+  border-top:1px solid var(--border);
+  padding:.35em .9em env(safe-area-inset-bottom,.35em);
+  display:flex;align-items:center;gap:.6em;
+  font-size:.75em;font-family:'DM Sans',sans-serif;
+  z-index:150;
+  transform:translateY(100%);
+  transition:transform .25s ease;
+  max-width:700px;margin:0 auto;
+  /* when throwBar is visible, sit above it */
+}
+#syncToast.show{transform:translateY(0);}
+body.has-throwbar #syncToast{bottom:var(--throwbar-h, 160px);}
+.toast-icon{font-size:1em;flex-shrink:0;}
+.toast-text{flex:1;color:var(--muted);}
+.toast-text.ok{color:var(--green);}
+.toast-text.err{color:var(--red);}
+.toast-text.pending{color:var(--blue);}
+.toast-close{
+  background:none;border:none;color:var(--muted);font-size:1em;
+  cursor:pointer;min-height:0;padding:.1em .3em;box-shadow:none;margin:0;
+}
+.toast-close:hover{color:var(--text);background:none;box-shadow:none;}
+
+/* ── SYNC MODAL ── */
+.sync-modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.sync-modal-backdrop.open{opacity:1;pointer-events:all;}
+.sync-modal{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);
+  padding:1.2em 1.4em;width:min(420px,92vw);max-width:420px;
+}
+.sync-modal-title{
+  font-family:'Bebas Neue',sans-serif;font-size:1.4em;letter-spacing:.08em;
+  color:var(--green);margin-bottom:.8em;
+}
+.sync-step{
+  display:flex;align-items:center;gap:.7em;padding:.5em 0;
+  border-bottom:1px solid var(--border);font-size:.88em;
+}
+.sync-step:last-of-type{border-bottom:none;}
+.sync-step .step-icon{font-size:1.1em;width:1.4em;text-align:center;flex-shrink:0;}
+.sync-step .step-label{flex:1;color:var(--muted);}
+.sync-step.active .step-label{color:var(--text);}
+.sync-step.ok .step-label{color:var(--green);}
+.sync-step.err .step-label{color:var(--red);}
+.sync-step.active .step-icon{animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sync-modal-actions{margin-top:.9em;display:flex;gap:8px;}
+
 /* ── SHEETS SYNC UI ── */
 .sheets-setup{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:.75em .9em;margin-bottom:.6em;}
 .sheets-setup summary{font-size:.8em;color:var(--muted);cursor:pointer;user-select:none;list-style:none;}
@@ -138,9 +194,6 @@ input[type=text]:focus{border-color:var(--green);}
 .sync-status.err{color:var(--red);}
 .sync-status.pending{color:var(--blue);}
 .gas-code-box{margin-top:.7em;background:#1e1e1e;border-radius:8px;padding:.7em .8em;font-size:.72em;font-family:monospace;color:#7ecb8f;white-space:pre;overflow-x:auto;line-height:1.55;border:1px solid #444;}
-.win-sync{margin-top:.6em;padding:.6em .8em;background:var(--surface2);border-radius:8px;border:1px solid var(--border);}
-.win-sync-title{font-size:.68em;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.3em;}
-
 @media(max-width:480px){
   body{font-size:15px;}
   .tgrid button{width:3.6em;height:3.6em;font-size:1em;}
@@ -163,6 +216,7 @@ input[type=text]:focus{border-color:var(--green);}
     <button class="tab"        id="tabPractice" onclick="showTab('practice-content')">Harjoittelu</button>
     <button class="tab"        id="tabDiary"    onclick="showTab('diary-content')">Päiväkirja</button>
     <button class="tab"        id="tabStats"    onclick="showTab('stats-content')">Tilastot</button>
+    <button class="tab" id="tabSync" onclick="openSyncModal()" style="margin-left:auto;">☁</button>
   </div>
 
   <!-- PELI TAB -->
@@ -295,6 +349,10 @@ function doGet(e) {
       </div>
     </details>
 
+    <div style="display:flex;gap:8px;margin-bottom:.5em;">
+      <button onclick="openSyncModal()" style="flex:1;padding:.5em;font-size:.88em;border-color:var(--green);color:var(--green);">☁ Synkronoi tiedot</button>
+      <div id="lastSyncPill" style="display:flex;align-items:center;font-size:.7em;color:var(--muted);white-space:nowrap;padding:0 .4em;"></div>
+    </div>
     <button id="startGame" class="active" style="width:100%;padding:.6em;font-size:1em;position:sticky;bottom:.5em;">Aloita peli ▶</button>
   </div>
 
@@ -363,17 +421,48 @@ function doGet(e) {
     <div id="winBanner">
       <div class="win-title" id="winTitle"></div>
       <div class="win-sub"   id="winSub"></div>
-      <!-- Sheets sync status shown here after game ends -->
-      <div class="win-sync" id="winSync" style="display:none;">
-        <div class="win-sync-title">Google Sheets</div>
-        <div class="sync-status" id="winSyncStatus"></div>
-        <button onclick="manualSync()" style="margin-top:.5em;font-size:.78em;padding:.3em .9em;min-height:32px;">↺ Tallenna uudelleen</button>
-      </div>
+
     </div>
     <div class="players-grid" id="playersContainer"></div>
     <div class="card" id="coCard" style="display:none;">
       <div class="card-label">Checkout</div>
       <div class="co-row" id="checkoutSuggestions"></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══ SYNC MODAL ══ -->
+<div class="sync-modal-backdrop" id="syncModalBackdrop" onclick="if(event.target===this)closeSyncModal()">
+  <div class="sync-modal">
+    <div class="sync-modal-title">☁ Synkronoi tiedot</div>
+
+    <div class="sync-step" id="sStep1">
+      <span class="step-icon">⊙</span>
+      <span class="step-label">Yhdistetään Sheetsiin…</span>
+    </div>
+    <div class="sync-step" id="sStep2">
+      <span class="step-icon">⊙</span>
+      <span class="step-label">Haetaan pelaajat ja tilastot…</span>
+    </div>
+    <div class="sync-step" id="sStep3">
+      <span class="step-icon">⊙</span>
+      <span class="step-label">Haetaan päiväkirja…</span>
+    </div>
+    <div class="sync-step" id="sStep4">
+      <span class="step-icon">⊙</span>
+      <span class="step-label">Lähetetään omat pelaajatiedot…</span>
+    </div>
+    <div class="sync-step" id="sStep5">
+      <span class="step-icon">⊙</span>
+      <span class="step-label">Lähetetään pelipuskuri…</span>
+    </div>
+
+    <div class="sync-status" id="syncModalStatus" style="margin-top:.7em;min-height:16px;font-size:.82em;"></div>
+
+    <div class="sync-modal-actions">
+      <button id="syncModalClose" onclick="closeSyncModal()" style="flex:1;">Sulje</button>
+      <button id="syncModalRetry" onclick="fullSync()" style="flex:1;display:none;">↺ Yritä uudelleen</button>
     </div>
   </div>
 </div>
@@ -508,16 +597,15 @@ async function autoSyncQueue(){
   const q=queueLoad();
   if(q.length===0) return;
 
-  const el=document.getElementById('winSync');
-  const allStatus=[
-    document.getElementById('throwBarSyncStatus'),
-    document.getElementById('winSyncStatus'),
-    document.getElementById('statsSyncStatus'),
-  ].filter(Boolean);
-  function setStatus(msg,cls){ allStatus.forEach(el=>{el.textContent=msg;el.className='sync-status '+cls;}); }
+  function setStatus(msg,cls){
+    showToast(msg, cls, false);
+    ['throwBarSyncStatus','statsSyncStatus','biSyncStatus'].forEach(id=>{
+      const e=document.getElementById(id);
+      if(e){e.textContent=msg;e.className='sync-status '+cls;}
+    });
+  }
 
-  if(el) el.style.display='block';
-  setStatus('⧗ Yhdistetään…','pending');
+  setStatus(`⧗ Yhdistetään…`,'pending');
   await new Promise(r=>setTimeout(r,250));
   setStatus(`↻ Synkronoidaan ${q.length} peliä…`,'pending');
 
@@ -525,7 +613,6 @@ async function autoSyncQueue(){
   const GAME_HDR=['Päivämäärä','Aika','PeliID','Voittaja','Pelaajat','VoittajanTikkoja','Lähtöpisteet','Pelimuoto','Pelaajamäärä'];
   const ROUN_HDR=['PeliID','Pelaaja','Kierros','T1','T2','T3','Pisteet','Status','Päivämäärä'];
 
-  // Collect all rows from all queued games
   const allStat=[], allGame=[], allRound=[];
   q.forEach(entry=>{
     const {statRows,gameRow,roundRows}=buildSheetRows(entry);
@@ -536,19 +623,205 @@ async function autoSyncQueue(){
     await postSheet(cfg.sh1||'Tilastot', STAT_HDR, allStat);
     await postSheet(cfg.sh2||'Pelit',    GAME_HDR, allGame);
     if(allRound.length) await postSheet(cfg.sh3||'Kierrokset', ROUN_HDR, allRound);
-
-    // Clear queue on success
     queueSave([]);
     updateQueueBadge();
-loadLastSync();
-autoStartSync();
-    setStatus(`✓ Valmis! ${q.length} peliä tallennettu → ${cfg.sh1||'Tilastot'}, ${cfg.sh2||'Pelit'}, ${cfg.sh3||'Kierrokset'}`,'ok');
+    showToast(`✓ ${q.length} peliä tallennettu Sheetsiin`, 'ok', true);
   }catch(e){
-    setStatus(`✗ Virhe: ${e.message} — ${q.length} peliä jonossa, yritä uudelleen.`,'err');
+    showToast(`✗ Virhe: ${e.message} — ${q.length} peliä jonossa`, 'err', false);
   }
 }
 
 
+
+
+
+// ══════════════════════════════════════════════════════
+// SYNC TOAST — pieni ilmoituspalkki alareunassa
+// ══════════════════════════════════════════════════════
+let toastTimer = null;
+
+function showToast(msg, cls, autohide=true){
+  const toast = document.getElementById('syncToast');
+  const icon  = document.getElementById('toastIcon');
+  const text  = document.getElementById('toastText');
+  icon.textContent  = cls==='ok'?'✓': cls==='err'?'✗': '☁';
+  text.textContent  = msg;
+  text.className    = 'toast-text ' + cls;
+  toast.classList.add('show');
+  if(toastTimer){ clearTimeout(toastTimer); toastTimer=null; }
+  if(autohide && cls==='ok'){
+    toastTimer = setTimeout(hideToast, 4000);
+  }
+}
+
+function hideToast(){
+  document.getElementById('syncToast').classList.remove('show');
+  if(toastTimer){ clearTimeout(toastTimer); toastTimer=null; }
+}
+
+// ══════════════════════════════════════════════════════
+// TÄYSI SYNKRONOINTI — kaksisuuntainen, ei vaadi peliä
+// ══════════════════════════════════════════════════════
+function openSyncModal(){
+  const cfg = loadSheetsCfg();
+  document.getElementById('syncModalBackdrop').classList.add('open');
+  document.getElementById('syncModalRetry').style.display = 'none';
+  document.getElementById('syncModalClose').textContent = 'Sulje';
+  // Reset steps
+  ['sStep1','sStep2','sStep3','sStep4','sStep5'].forEach(id=>{
+    const el = document.getElementById(id);
+    el.className = 'sync-step';
+    el.querySelector('.step-icon').textContent = '⊙';
+  });
+  document.getElementById('syncModalStatus').textContent = '';
+  document.getElementById('syncModalStatus').className = 'sync-status';
+
+  if(!cfg.url){
+    setStep('sStep1','err','✗');
+    setModalStatus('Webhook URL puuttuu — avaa Sheets-asetukset ja aseta URL ensin.','err');
+    document.getElementById('sheetsSetupDetails').open = true;
+    return;
+  }
+  fullSync();
+}
+
+function closeSyncModal(){
+  document.getElementById('syncModalBackdrop').classList.remove('open');
+}
+
+function setStep(id, state, icon, label){
+  const el = document.getElementById(id);
+  el.className = 'sync-step ' + state;
+  el.querySelector('.step-icon').textContent = icon;
+  if(label) el.querySelector('.step-label').textContent = label;
+}
+
+function setModalStatus(msg, cls){
+  const el = document.getElementById('syncModalStatus');
+  if(el){ el.textContent = msg; el.className = 'sync-status ' + cls; }
+  // Update small status elements
+  ['throwBarSyncStatus','statsSyncStatus','biSyncStatus'].forEach(id=>{
+    const e = document.getElementById(id);
+    if(e){ e.textContent = msg; e.className = 'sync-status ' + cls; }
+  });
+  // Show toast for all sync events
+  showToast(msg, cls, cls==='ok' || cls==='err');
+}
+
+async function fullSync(){
+  const cfg = loadSheetsCfg();
+  document.getElementById('syncModalRetry').style.display = 'none';
+
+  // ── Step 1: Connect ──
+  setStep('sStep1','active','↻','Yhdistetään Sheetsiin…');
+  await new Promise(r=>setTimeout(r,250));
+
+  let remoteData;
+  try{
+    const r = await fetch(cfg.url+'?action=read',{method:'GET',mode:'cors'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    remoteData = await r.json();
+    if(!remoteData.ok) throw new Error(remoteData.error||'Tuntematon virhe');
+    setStep('sStep1','ok','✓','Yhdistetty');
+  }catch(e){
+    setStep('sStep1','err','✗','Yhteys epäonnistui: '+e.message);
+    setModalStatus('Tarkista webhook URL ja internet-yhteys.','err');
+    document.getElementById('syncModalRetry').style.display='block';
+    return;
+  }
+
+  // ── Step 2: Pull players ──
+  setStep('sStep2','active','↻','Haetaan pelaajat ja tilastot…');
+  await new Promise(r=>setTimeout(r,150));
+  try{
+    if(remoteData.players && remoteData.players.length > 0){
+      const merged = mergePlayers(dbLoad(), remoteData.players);
+      dbSave(merged);
+      setStep('sStep2','ok','✓',`${remoteData.players.length} pelaajaa haettu ja yhdistetty`);
+    } else {
+      setStep('sStep2','ok','✓','Ei pelaajia Sheetsissä vielä');
+    }
+    renderPlayerList();
+  }catch(e){
+    setStep('sStep2','err','✗','Virhe: '+e.message);
+  }
+
+  // ── Step 3: Pull diary ──
+  setStep('sStep3','active','↻','Haetaan päiväkirja…');
+  await new Promise(r=>setTimeout(r,150));
+  try{
+    if(remoteData.diary && remoteData.diary.length > 0){
+      const merged = mergeDiary(diaryLoad(), remoteData.diary);
+      diarySave(merged);
+      setStep('sStep3','ok','✓',`${remoteData.diary.length} pelimerkintää yhdistetty`);
+    } else {
+      setStep('sStep3','ok','✓','Ei päiväkirjamerkintöjä Sheetsissä vielä');
+    }
+  }catch(e){
+    setStep('sStep3','err','✗','Virhe: '+e.message);
+  }
+
+  // ── Step 4: Push players + diary ──
+  setStep('sStep4','active','↻','Lähetetään omat tiedot…');
+  await new Promise(r=>setTimeout(r,150));
+  try{
+    await fetch(cfg.url,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'syncPlayers',players:dbLoad()})});
+    await fetch(cfg.url,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'syncDiary',entries:diaryLoad()})});
+    setStep('sStep4','ok','✓','Pelaajat ja päiväkirja lähetetty');
+  }catch(e){
+    setStep('sStep4','err','✗','Lähetys epäonnistui: '+e.message);
+  }
+
+  // ── Step 5: Flush game queue ──
+  setStep('sStep5','active','↻','Lähetetään pelipuskuri…');
+  await new Promise(r=>setTimeout(r,150));
+  const q = queueLoad();
+  if(q.length === 0){
+    setStep('sStep5','ok','✓','Ei jonossa olevia pelejä');
+  } else {
+    try{
+      const STAT_HDR=['Päivämäärä','Aika','PeliID','Pelaaja','Tulos','Sija','Tikkoja','Pisteet','Busteja','Tuplat','Triplat','Avg/kierros','ParasKierros','Lähtöpisteet','Pelimuoto'];
+      const GAME_HDR=['Päivämäärä','Aika','PeliID','Voittaja','Pelaajat','VoittajanTikkoja','Lähtöpisteet','Pelimuoto','Pelaajamäärä'];
+      const ROUN_HDR=['PeliID','Pelaaja','Kierros','T1','T2','T3','Pisteet','Status','Päivämäärä'];
+      const allStat=[],allGame=[],allRound=[];
+      q.forEach(entry=>{
+        const {statRows,gameRow,roundRows}=buildSheetRows(entry);
+        allStat.push(...statRows);allGame.push(...gameRow);allRound.push(...roundRows);
+      });
+      await postSheet(cfg.sh1||'Tilastot',STAT_HDR,allStat);
+      await postSheet(cfg.sh2||'Pelit',GAME_HDR,allGame);
+      if(allRound.length) await postSheet(cfg.sh3||'Kierrokset',ROUN_HDR,allRound);
+      queueSave([]);
+      updateQueueBadge();
+      setStep('sStep5','ok','✓',`${q.length} peliä lähetetty`);
+    }catch(e){
+      setStep('sStep5','err','✗','Puskurin lähetys epäonnistui: '+e.message);
+    }
+  }
+
+  // ── Done ──
+  const anyErr = ['sStep1','sStep2','sStep3','sStep4','sStep5']
+    .some(id=>document.getElementById(id).classList.contains('err'));
+
+  setLastSync();
+  updateLastSyncPill();
+
+  if(anyErr){
+    setModalStatus('Synkronointi valmis — osa vaiheista epäonnistui.','err');
+    document.getElementById('syncModalRetry').style.display='block';
+  } else {
+    setModalStatus('✓ Kaikki tiedot synkronoitu onnistuneesti!','ok');
+    document.getElementById('syncModalClose').textContent = 'Valmis ✓';
+  }
+}
+
+function updateLastSyncPill(){
+  const ts = localStorage.getItem(LAST_SYNC_KEY);
+  const el = document.getElementById('lastSyncPill');
+  if(el && ts) el.textContent = 'Synk. '+ts;
+}
 
 // ══════════════════════════════════════════════════════
 // KAKSISUUNTAINEN SYNKRONOINTI
@@ -865,6 +1138,7 @@ document.getElementById('startGame').onclick=()=>{
   document.getElementById('winBanner').style.display='none';
   document.getElementById('winSync').style.display='none';
   document.getElementById('throwBar').style.display='block';
+  document.body.classList.add('has-throwbar');
   document.getElementById('throwControls').style.display='block';
   renderThrowButtons(); updateToggleUI(); updateUI();
 };
@@ -1092,6 +1366,7 @@ function endGame(){
   document.getElementById('setup').style.display='block';
   document.getElementById('winBanner').style.display='none';
   document.getElementById('throwBar').style.display='none';
+  document.body.classList.remove('has-throwbar');
   document.getElementById('throwControls').style.display='block';
   renderPlayerList();
 }
@@ -1392,12 +1667,13 @@ function endDrill(){
 // ══════════════════════════════════════════════════════
 async function manualSync(){
   const cfg=loadSheetsCfg();
-  const allStatus=[
-    document.getElementById('throwBarSyncStatus'),
-    document.getElementById('winSyncStatus'),
-    document.getElementById('statsSyncStatus'),
-  ].filter(Boolean);
-  function setStatus(msg,cls){ allStatus.forEach(el=>{el.textContent=msg;el.className='sync-status '+cls;}); }
+  function setStatus(msg,cls){
+    showToast(msg, cls, false);
+    ['throwBarSyncStatus','statsSyncStatus','biSyncStatus'].forEach(id=>{
+      const e=document.getElementById(id);
+      if(e){e.textContent=msg;e.className='sync-status '+cls;}
+    });
+  }
 
   if(!cfg.url){
     setStatus('⚠ Ei webhook URL’ia — aseta Sheets-asetuksista.','err');
@@ -1412,9 +1688,6 @@ async function manualSync(){
     return;
   }
 
-  const ws=document.getElementById('winSync');
-  if(ws) ws.style.display='block';
-
   await autoSyncQueue();
 }
 
@@ -1425,5 +1698,13 @@ renderPlayerList();
 loadSheetsCfgToUI();
 updateQueueBadge();
 </script>
+
+<!-- ══ SYNC TOAST ══ -->
+<div id="syncToast" role="status" aria-live="polite">
+  <span class="toast-icon" id="toastIcon">☁</span>
+  <span class="toast-text" id="toastText"></span>
+  <button class="toast-close" onclick="hideToast()" aria-label="Sulje">✕</button>
+</div>
+
 </body>
 </html>
